@@ -1,4 +1,4 @@
 all:
 	rm -f build/* !build/.gitkeep
-	eosiocpp -o build/guest.wast src/guest.cpp
-	eosiocpp -g build/guest.abi src/guest.cpp
+	eosiocpp -o build/property.wast src/property.cpp
+	eosiocpp -g build/property.abi src/property.cpp
