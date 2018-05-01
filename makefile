@@ -6,17 +6,17 @@ rebuild:
 	make build
 
 clean:
-	rm -f property/* !property/.gitkeep
+	rm -f inventory/* !inventory/.gitkeep
 
 build:
-	eosiocpp -o property/property.wast src/property.cpp
-	eosiocpp -g property/property.abi src/property.cpp
+	eosiocpp -o inventory/inventory.wast src/inventory.cpp
+	eosiocpp -g inventory/inventory.abi src/inventory.cpp
 
-# requires unlocked account prop.code
+# requires unlocked account inv.code
 reinstall:
 	make rebuild
 	make deploy
 
-# requires unlocked account prop.code
+# requires unlocked account inv.code
 deploy:
-	cleos set contract prop.code property -p prop.code
+	cleos set contract inv.code inventory -p inv.code
