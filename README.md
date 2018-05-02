@@ -27,7 +27,7 @@ cleos push action inv.code addproperty '["user","Abbey Road Studios","3 Abbey Ro
 Should return something like:
 ```
 executed transaction: 3a6e65cde0666532030adaec49d75eef93bda81e5749b23d2d2d92af800007f6  296 bytes  131072 cycles
-#      inv.code <= inv.code::addproperty        {"owner":"user","name":"Abbey Road Studios, St John's Wood","address1":"Abbey Road Studios","address2":"2nd Floor","city":"City of Westminster","...
+#      inv.code <= inv.code::addproperty        {"owner":"user","name":"Abbey Road Studios, St John's Wood","address_1":"Abbey Road Studios","address_2":"2nd Floor","city":"City of Westminster","...
 
 ```
 #### Read
@@ -41,8 +41,8 @@ Should return:
       "id": 0,
       "owner": "user",
       "name": "Abbey Road Studios",
-      "address1": "3 Abbey Road, St John`s Wood",
-      "address2": "2nd Floor",
+      "address_1": "3 Abbey Road, St John`s Wood",
+      "address_2": "2nd Floor",
       "city": "City of Westminster",
       "region": "London",
       "postal_code": "123456",

@@ -15,7 +15,7 @@ public:
   _property(_self,_self){}
 
   // @abi action
-  void addproperty( name owner, string name, string address1, string address2,
+  void addproperty( name owner, string name, string address_1, string address_2,
       string city, string region, string postal_code, uint64_t unit_count) {
       require_auth(owner);
 
@@ -23,8 +23,8 @@ public:
           row.id = _property.available_primary_key();
           row.owner = owner;
           row.name = name;
-          row.address1 = address1;
-          row.address2 = address2;
+          row.address_1 = address_1;
+          row.address_2 = address_2;
           row.city = city;
           row.region = region;
           row.postal_code = postal_code;
@@ -34,7 +34,7 @@ public:
   }
 
   // @abi action
-  void modproperty(name owner, uint64_t id, string name, string address1, string address2,
+  void modproperty(name owner, uint64_t id, string name, string address_1, string address_2,
       string city, string region, string postal_code, uint64_t unit_count) {
       require_auth(owner);
 
@@ -43,8 +43,8 @@ public:
           row.id = id;
           row.owner = owner;
           row.name = name;
-          row.address1 = address1;
-          row.address2 = address2;
+          row.address_1 = address_1;
+          row.address_2 = address_2;
           row.city = city;
           row.region = region;
           row.postal_code = postal_code;
@@ -68,8 +68,8 @@ private:
       name owner;
 
       string name;
-      string address1;
-      string address2;
+      string address_1;
+      string address_2;
       string city;
       string region;
       string postal_code;
@@ -77,7 +77,7 @@ private:
 
       auto primary_key()const { return id; }
 
-      EOSLIB_SERIALIZE(property, (id)(owner)(name)(address1)(address2)(city)(region)(postal_code)(unit_count));
+      EOSLIB_SERIALIZE(property, (id)(owner)(name)(address_1)(address_2)(city)(region)(postal_code)(unit_count));
   };
 
   multi_index<N(property), property> _property;
