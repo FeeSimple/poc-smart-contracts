@@ -70,6 +70,7 @@ public:
 private:
   typedef multi_index<N(property), Property> Properties;
   typedef multi_index<N(floor), Floor> Floors;
+  typedef multi_index<N(floorImage), FloorImage> FloorImages;
 };
 
 EOSIO_ABI(inventory, (addproperty)(modproperty)(delproperty));
