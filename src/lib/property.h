@@ -4,7 +4,7 @@ using namespace std;
 namespace property{
 
   // @abi table
-  struct Property {
+  struct Properties {
       uint64_t id;
 
       string name;
@@ -17,7 +17,7 @@ namespace property{
 
       auto primary_key()const { return id; }
 
-      EOSLIB_SERIALIZE(Property, (id)(name)(address_1)(address_2)(city)(region)(postal_code)(unit_count));
+      EOSLIB_SERIALIZE(Properties, (id)(name)(address_1)(address_2)(city)(region)(postal_code)(unit_count));
   };
 
 }

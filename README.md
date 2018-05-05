@@ -4,7 +4,7 @@
 
 ## Install
 
-Run `make` on the root to rebuild the contracts.
+Run `make` on the root to rebuild the contract.
 
 ## Deployment
 
@@ -32,7 +32,7 @@ executed transaction: 3a6e65cde0666532030adaec49d75eef93bda81e5749b23d2d2d92af80
 ```
 #### Read
 ```
-cleos get table inv.code inv.code property
+cleos get table inv.code inv.code properties
 ```
 Should return:
 ```
