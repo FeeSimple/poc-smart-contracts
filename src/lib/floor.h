@@ -1,5 +1,3 @@
-//#include <eosiolib/crypto.h>
-
 using namespace eosio;
 using namespace std;
 
@@ -32,6 +30,7 @@ namespace floor{
     string ipfs_address;
 
     auto primary_key()const { return id; }
+    
     EOSLIB_SERIALIZE(FloorImage, (id)(floor_id)(hash)(ipfs_address));
   };
 
