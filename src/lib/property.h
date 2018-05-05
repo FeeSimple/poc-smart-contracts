@@ -1,10 +1,10 @@
 using namespace eosio;
 using namespace std;
 
-namespace property{
+namespace feesimple{
 
   // @abi table
-  struct Properties {
+  struct property {
       uint64_t id;
 
       string name;
@@ -17,7 +17,7 @@ namespace property{
 
       auto primary_key()const { return id; }
 
-      EOSLIB_SERIALIZE(Properties, (id)(name)(address_1)(address_2)(city)(region)(postal_code)(unit_count));
+      EOSLIB_SERIALIZE(property, (id)(name)(address_1)(address_2)(city)(region)(postal_code)(unit_count));
   };
 
 }

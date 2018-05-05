@@ -1,10 +1,10 @@
 using namespace eosio;
 using namespace std;
 
-namespace floor{
+namespace feesimple{
 
   // @abi table
-  struct Floors {
+  struct floor {
     uint64_t id;
     uint64_t property_id;
 
@@ -19,11 +19,11 @@ namespace floor{
 
     auto primary_key()const { return id; }
 
-    EOSLIB_SERIALIZE(Floors, (id)(property_id)(name)(bedrooms)(bathrooms)(sq_ft_min)(sq_ft_max)(rent_min)(rent_max)(deposit));
+    EOSLIB_SERIALIZE(floor, (id)(property_id)(name)(bedrooms)(bathrooms)(sq_ft_min)(sq_ft_max)(rent_min)(rent_max)(deposit));
   };
 
   // @abi table
-  struct FloorImages {
+  struct floorimage {
     uint64_t id;
     uint64_t floor_id;
 
@@ -32,7 +32,7 @@ namespace floor{
 
     auto primary_key()const { return id; }
 
-    EOSLIB_SERIALIZE(FloorImages, (id)(floor_id)(hash)(ipfs_address));
+    EOSLIB_SERIALIZE(floorimage, (id)(floor_id)(hash)(ipfs_address));
   };
 
 }
