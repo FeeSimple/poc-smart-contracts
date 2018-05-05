@@ -2,9 +2,11 @@
 #include <eosiolib/print.hpp>
 #include <eosiolib/multi_index.hpp>
 #include <eosiolib/asset.hpp>
+#include "lib/property.h"
 
 using namespace eosio;
 using namespace std;
+using namespace property;
 
 class inventory : contract {
   using contract::contract;
@@ -62,25 +64,7 @@ public:
 
 
 private:
-  // @abi table
-  struct property {
-      uint64_t id;
-      name owner;
-
-      string name;
-      string address_1;
-      string address_2;
-      string city;
-      string region;
-      string postal_code;
-      uint64_t unit_count;
-
-      auto primary_key()const { return id; }
-
-      EOSLIB_SERIALIZE(property, (id)(owner)(name)(address_1)(address_2)(city)(region)(postal_code)(unit_count));
-  };
-
-  multi_index<N(property), property> _property;
+  multi_index<N(property), Property> _property;  
 };
 
 EOSIO_ABI( inventory, (addproperty)(modproperty)(delproperty) );
