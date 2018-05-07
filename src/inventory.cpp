@@ -2,8 +2,8 @@
 #include <eosiolib/print.hpp>
 #include <eosiolib/multi_index.hpp>
 #include <eosiolib/asset.hpp>
+#include "lib/floorplan.h"
 #include "lib/property.h"
-#include "lib/floor.h"
 
 using namespace eosio;
 using namespace std;
@@ -16,8 +16,8 @@ namespace feesimple{
     inventory(account_name self):
       contract(self),
       _properties(_self,_self),
-      _floors(_self,_self),
-      _floor_images(_self,_self){}
+      _floorplans(_self,_self),
+      _flplanimgs(_self,_self){}
 
     // PROPERTY TABLE -----------------------------------------------------------
 
@@ -67,13 +67,13 @@ namespace feesimple{
     // FLOOR TABLE --------------------------------------------------------------
 
     // @abi action
-    void addfloor(name owner, uint64_t property_id, string name, uint64_t bedrooms,
+    void addfloorplan(name owner, uint64_t property_id, string name, uint64_t bedrooms,
     uint64_t bathrooms, uint64_t sq_ft_min, uint64_t sq_ft_max, uint64_t rent_max,
     uint64_t rent_min, uint64_t deposit){
       require_auth(owner);
 
-      _floors.emplace(owner, [&] (auto& row) {
-        row.id          = _floors.available_primary_key();
+      _floorplans.emplace(owner, [&] (auto& row) {
+        row.id          = _floorplans.available_primary_key();
         row.property_id = property_id;
         row.name        = name;
         row.bedrooms    = bedrooms;
@@ -87,13 +87,13 @@ namespace feesimple{
     }
 
     // @abi action
-    void modfloor(name owner, uint64_t id, uint64_t property_id, string name,
+    void modfloorplan(name owner, uint64_t id, uint64_t property_id, string name,
     uint64_t bedrooms, uint64_t bathrooms, uint64_t sq_ft_min,
     uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, uint64_t deposit) {
       require_auth(owner);
 
-      auto iter = _floors.find(id);
-      _floors.modify(iter, 0, [&] (auto& row) {
+      auto iter = _floorplans.find(id);
+      _floorplans.modify(iter, 0, [&] (auto& row) {
         row.property_id = property_id;
         row.name        = name;
         row.bedrooms    = bedrooms;
@@ -107,54 +107,54 @@ namespace feesimple{
     }
 
     // @abi action
-    void delfloor(name owner, uint64_t id) {
+    void delfloorplan(name owner, uint64_t id) {
       require_auth(owner);
 
-      auto iter = _floors.find(id);
-      _floors.erase(iter);
+      auto iter = _floorplans.find(id);
+      _floorplans.erase(iter);
     }
 
     // FLOOR IMAGE TABLE --------------------------------------------------------
 
     // @abi action
-    void addfloorimage(name owner, uint64_t floor_id, checksum256 hash,
+    void addflplanimg(name owner, uint64_t floorplan_id, checksum256 image_hash,
       string ipfs_address){
       require_auth(owner);
 
-      _floor_images.emplace(owner, [&] (auto& row) {
-        row.id           = _floor_images.available_primary_key();
-        row.floor_id     = floor_id;
-        row.hash         = hash;
+      _flplanimgs.emplace(owner, [&] (auto& row) {
+        row.id           = _flplanimgs.available_primary_key();
+        row.floorplan_id = floorplan_id;
+        row.image_hash   = image_hash;
         row.ipfs_address = ipfs_address;
       });
     }
 
     // @abi action
-    void modfloorimage(name owner, uint64_t id, uint64_t floor_id,
-      checksum256 hash, string ipfs_address) {
+    void modflplanimg(name owner, uint64_t id, uint64_t floorplan_id,
+      checksum256 image_hash, string ipfs_address) {
       require_auth(owner);
 
-      auto iter = _floor_images.find(id);
-      _floor_images.modify(iter, 0, [&] (auto& row) {
-        row.floor_id     = floor_id;
-        row.hash         = hash;
+      auto iter = _flplanimgs.find(id);
+      _flplanimgs.modify(iter, 0, [&] (auto& row) {
+        row.floorplan_id = floorplan_id;
+        row.image_hash   = image_hash;
         row.ipfs_address = ipfs_address;
       });
     }
 
     // @abi action
-    void delfloorimage(name owner, uint64_t id) {
+    void delflplanimg(name owner, uint64_t id) {
       require_auth(owner);
 
-      auto iter = _floor_images.find(id);
-      _floor_images.erase(iter);
+      auto iter = _flplanimgs.find(id);
+      _flplanimgs.erase(iter);
     }
 
   private:
-    multi_index<N(property),   property>    _properties;
-    multi_index<N(floor),      floor>       _floors;
-    multi_index<N(floorimage), floorimage>  _floor_images;
+    multi_index<N(property),     property>     _properties;
+    multi_index<N(floorplan),    floorplan>    _floorplans;
+    multi_index<N(floorplanimg), floorplanimg> _flplanimgs;
   };
 
-  EOSIO_ABI(inventory, (addproperty)(modproperty)(delproperty)(addfloor)(modfloor)(delfloor)(addfloorimage)(modfloorimage)(delfloorimage));
+  EOSIO_ABI(inventory,(addproperty)(modproperty)(delproperty)(addfloorplan)(modfloorplan)(delfloorplan)(addflplanimg)(modflplanimg)(delflplanimg));
 }
