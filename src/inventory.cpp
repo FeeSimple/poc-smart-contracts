@@ -28,7 +28,6 @@ namespace feesimple{
 
       _properties.emplace(owner, [&] (auto& row) {
         row.id          = _properties.available_primary_key();
-
         row.name        = name;
         row.address_1   = address_1;
         row.address_2   = address_2;
@@ -74,8 +73,7 @@ namespace feesimple{
       require_auth(owner);
 
       _floors.emplace(owner, [&] (auto& row) {
-        row.id = _floors.available_primary_key();
-
+        row.id          = _floors.available_primary_key();
         row.property_id = property_id;
         row.name        = name;
         row.bedrooms    = bedrooms;
@@ -125,7 +123,6 @@ namespace feesimple{
 
       _floor_images.emplace(owner, [&] (auto& row) {
         row.id           = _floor_images.available_primary_key();
-
         row.floor_id     = floor_id;
         row.hash         = hash;
         row.ipfs_address = ipfs_address;
@@ -157,7 +154,6 @@ namespace feesimple{
     multi_index<N(property),   property>    _properties;
     multi_index<N(floor),      floor>       _floors;
     multi_index<N(floorimage), floorimage>  _floor_images;
-
   };
 
   EOSIO_ABI(inventory, (addproperty)(modproperty)(delproperty)(addfloor)(modfloor)(delfloor)(addfloorimage)(modfloorimage)(delfloorimage));
