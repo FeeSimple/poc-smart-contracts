@@ -162,7 +162,7 @@ namespace feesimple{
     }
 
   private:
-    typedef multi_index<N(property), property>     property_index;
+    typedef multi_index<N(property), property> property_index;
     property_index  properties;
 
     typedef multi_index<N(floorplan), floorplan,
