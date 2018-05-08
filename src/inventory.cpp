@@ -59,6 +59,10 @@ namespace feesimple{
     void delproperty(name owner, uint64_t id) {
       require_auth(owner);
 
+      auto propidx = floorplans.get_index<N(property_id)>();
+      auto floorplan = propidx.find(id);
+      eosio_assert(floorplan == propidx.end(), "Foreign key constrant violation: row referenced on floorplans");
+
       auto iter = properties.find(id);
       properties.erase(iter);
     }
@@ -71,6 +75,9 @@ namespace feesimple{
     uint64_t bathrooms, uint64_t sq_ft_min, uint64_t sq_ft_max, uint64_t rent_min,
     uint64_t rent_max, uint64_t deposit){
       require_auth(owner);
+
+      auto property = properties.find(property_id);
+      eosio_assert(property != properties.end(), "Referenced property does not exist");
 
       floorplans.emplace(owner, [&] (auto& row) {
         row.id          = floorplans.available_primary_key();
@@ -109,6 +116,10 @@ namespace feesimple{
     // @abi action
     void delfloorplan(name owner, uint64_t id) {
       require_auth(owner);
+
+      auto floorplanidx = flplanimgs.get_index<N(floorplan_id)>();
+      auto flplanimg = floorplanidx.find(id);
+      eosio_assert(flplanimg == floorplanidx.end(), "Foreign key constrant violation: row referenced on flplanimgs");
 
       auto iter = floorplans.find(id);
       floorplans.erase(iter);
