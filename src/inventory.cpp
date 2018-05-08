@@ -68,8 +68,8 @@ namespace feesimple{
 
     // @abi action
     void addfloorplan(name owner, uint64_t property_id, string name, uint64_t bedrooms,
-    uint64_t bathrooms, uint64_t sq_ft_min, uint64_t sq_ft_max, uint64_t rent_max,
-    uint64_t rent_min, uint64_t deposit){
+    uint64_t bathrooms, uint64_t sq_ft_min, uint64_t sq_ft_max, uint64_t rent_min,
+    uint64_t rent_max, uint64_t deposit){
       require_auth(owner);
 
       floorplans.emplace(owner, [&] (auto& row) {
