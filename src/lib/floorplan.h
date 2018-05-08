@@ -18,6 +18,7 @@ namespace feesimple{
     uint64_t deposit;
 
     auto primary_key()const { return id; }
+    uint64_t by_property()const { return property_id; }
 
     EOSLIB_SERIALIZE(floorplan, (id)(property_id)(name)(bedrooms)(bathrooms)(sq_ft_min)(sq_ft_max)(rent_min)(rent_max)(deposit));
   };
@@ -31,6 +32,7 @@ namespace feesimple{
     string ipfs_address;
 
     auto primary_key()const { return id; }
+    uint64_t by_floorplan()const { return floorplan_id; }
 
     EOSLIB_SERIALIZE(floorplanimg, (id)(floorplan_id)(image_hash)(ipfs_address));
   };

@@ -15,9 +15,9 @@ namespace feesimple{
   public:
     inventory(account_name self):
       contract(self),
-      _properties(_self,_self),
-      _floorplans(_self,_self),
-      _flplanimgs(_self,_self){}
+      properties(_self,_self),
+      floorplans(_self,_self),
+      flplanimgs(_self,_self){}
 
     // PROPERTY TABLE -----------------------------------------------------------
 
@@ -26,8 +26,8 @@ namespace feesimple{
       string city, string region, string postal_code, uint64_t unit_count) {
       require_auth(owner);
 
-      _properties.emplace(owner, [&] (auto& row) {
-        row.id          = _properties.available_primary_key();
+      properties.emplace(owner, [&] (auto& row) {
+        row.id          = properties.available_primary_key();
         row.name        = name;
         row.address_1   = address_1;
         row.address_2   = address_2;
@@ -43,8 +43,8 @@ namespace feesimple{
       string city, string region, string postal_code, uint64_t unit_count) {
       require_auth(owner);
 
-      auto iter = _properties.find(id);
-      _properties.modify( iter, 0, [&]( auto& row) {
+      auto iter = properties.find(id);
+      properties.modify( iter, 0, [&]( auto& row) {
         row.name        = name;
         row.address_1   = address_1;
         row.address_2   = address_2;
@@ -59,8 +59,12 @@ namespace feesimple{
     void delproperty(name owner, uint64_t id) {
       require_auth(owner);
 
-      auto iter = _properties.find(id);
-      _properties.erase(iter);
+      auto propidx = floorplans.get_index<N(property_id)>();
+      auto floorplan = propidx.find(id);
+      eosio_assert(floorplan == propidx.end(), "Foreign key constrant violation: row referenced on floorplans");
+
+      auto iter = properties.find(id);
+      properties.erase(iter);
     }
 
 
@@ -68,12 +72,15 @@ namespace feesimple{
 
     // @abi action
     void addfloorplan(name owner, uint64_t property_id, string name, uint64_t bedrooms,
-    uint64_t bathrooms, uint64_t sq_ft_min, uint64_t sq_ft_max, uint64_t rent_max,
-    uint64_t rent_min, uint64_t deposit){
+    uint64_t bathrooms, uint64_t sq_ft_min, uint64_t sq_ft_max, uint64_t rent_min,
+    uint64_t rent_max, uint64_t deposit){
       require_auth(owner);
 
-      _floorplans.emplace(owner, [&] (auto& row) {
-        row.id          = _floorplans.available_primary_key();
+      auto property = properties.find(property_id);
+      eosio_assert(property != properties.end(), "Referenced property does not exist");
+
+      floorplans.emplace(owner, [&] (auto& row) {
+        row.id          = floorplans.available_primary_key();
         row.property_id = property_id;
         row.name        = name;
         row.bedrooms    = bedrooms;
@@ -92,8 +99,8 @@ namespace feesimple{
     uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, uint64_t deposit) {
       require_auth(owner);
 
-      auto iter = _floorplans.find(id);
-      _floorplans.modify(iter, 0, [&] (auto& row) {
+      auto iter = floorplans.find(id);
+      floorplans.modify(iter, 0, [&] (auto& row) {
         row.property_id = property_id;
         row.name        = name;
         row.bedrooms    = bedrooms;
@@ -110,8 +117,12 @@ namespace feesimple{
     void delfloorplan(name owner, uint64_t id) {
       require_auth(owner);
 
-      auto iter = _floorplans.find(id);
-      _floorplans.erase(iter);
+      auto floorplanidx = flplanimgs.get_index<N(floorplan_id)>();
+      auto flplanimg = floorplanidx.find(id);
+      eosio_assert(flplanimg == floorplanidx.end(), "Foreign key constrant violation: row referenced on flplanimgs");
+
+      auto iter = floorplans.find(id);
+      floorplans.erase(iter);
     }
 
     // FLOOR IMAGE TABLE --------------------------------------------------------
@@ -121,8 +132,8 @@ namespace feesimple{
       string ipfs_address){
       require_auth(owner);
 
-      _flplanimgs.emplace(owner, [&] (auto& row) {
-        row.id           = _flplanimgs.available_primary_key();
+      flplanimgs.emplace(owner, [&] (auto& row) {
+        row.id           = flplanimgs.available_primary_key();
         row.floorplan_id = floorplan_id;
         row.image_hash   = image_hash;
         row.ipfs_address = ipfs_address;
@@ -134,8 +145,8 @@ namespace feesimple{
       checksum256 image_hash, string ipfs_address) {
       require_auth(owner);
 
-      auto iter = _flplanimgs.find(id);
-      _flplanimgs.modify(iter, 0, [&] (auto& row) {
+      auto iter = flplanimgs.find(id);
+      flplanimgs.modify(iter, 0, [&] (auto& row) {
         row.floorplan_id = floorplan_id;
         row.image_hash   = image_hash;
         row.ipfs_address = ipfs_address;
@@ -146,14 +157,24 @@ namespace feesimple{
     void delflplanimg(name owner, uint64_t id) {
       require_auth(owner);
 
-      auto iter = _flplanimgs.find(id);
-      _flplanimgs.erase(iter);
+      auto iter = flplanimgs.find(id);
+      flplanimgs.erase(iter);
     }
 
   private:
-    multi_index<N(property),     property>     _properties;
-    multi_index<N(floorplan),    floorplan>    _floorplans;
-    multi_index<N(floorplanimg), floorplanimg> _flplanimgs;
+    typedef multi_index<N(property), property> property_index;
+    property_index  properties;
+
+    typedef multi_index<N(floorplan), floorplan,
+      indexed_by< N(property_id), const_mem_fun<floorplan, uint64_t, &floorplan::by_property>>
+      > floorplan_index;
+    floorplan_index floorplans;
+
+    typedef multi_index<N(floorplanimg), floorplanimg,
+      indexed_by< N(floorplan_id), const_mem_fun<floorplanimg, uint64_t, &floorplanimg::by_floorplan>>
+      > flplanimg_index;
+    flplanimg_index flplanimgs;
+
   };
 
   EOSIO_ABI(inventory,(addproperty)(modproperty)(delproperty)(addfloorplan)(modfloorplan)(delfloorplan)(addflplanimg)(modflplanimg)(delflplanimg));
