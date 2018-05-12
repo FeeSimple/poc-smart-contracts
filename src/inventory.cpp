@@ -44,6 +44,8 @@ namespace feesimple{
       require_auth(owner);
 
       auto iter = properties.find(id);
+      eosio_assert(iter != properties.end(), "Property does not exist");
+
       properties.modify( iter, 0, [&]( auto& row) {
         row.name        = name;
         row.address_1   = address_1;
@@ -64,6 +66,8 @@ namespace feesimple{
       eosio_assert(floorplan == propidx.end(), "Foreign key constrant violation: row referenced on floorplans");
 
       auto iter = properties.find(id);
+      eosio_assert(iter != properties.end(), "Property does not exist");
+
       properties.erase(iter);
     }
 
@@ -100,6 +104,8 @@ namespace feesimple{
       require_auth(owner);
 
       auto iter = floorplans.find(id);
+      eosio_assert(iter != floorplans.end(), "Floor Plan does not exist");
+
       floorplans.modify(iter, 0, [&] (auto& row) {
         row.property_id = property_id;
         row.name        = name;
@@ -122,6 +128,8 @@ namespace feesimple{
       eosio_assert(flplanimg == floorplanidx.end(), "Foreign key constrant violation: row referenced on flplanimgs");
 
       auto iter = floorplans.find(id);
+      eosio_assert(iter != floorplans.end(), "Floor Plan does not exist");
+
       floorplans.erase(iter);
     }
 
@@ -146,6 +154,8 @@ namespace feesimple{
       require_auth(owner);
 
       auto iter = flplanimgs.find(id);
+      eosio_assert(iter != flplanimgs.end(), "Floor Plan Image does not exist");
+
       flplanimgs.modify(iter, 0, [&] (auto& row) {
         row.floorplan_id = floorplan_id;
         row.image_hash   = image_hash;
@@ -158,6 +168,8 @@ namespace feesimple{
       require_auth(owner);
 
       auto iter = flplanimgs.find(id);
+      eosio_assert(iter != flplanimgs.end(), "Floor Plan Image does not exist");
+
       flplanimgs.erase(iter);
     }
 
