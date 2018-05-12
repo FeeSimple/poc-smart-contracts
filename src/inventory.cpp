@@ -4,6 +4,7 @@
 #include <eosiolib/asset.hpp>
 #include "lib/floorplan.h"
 #include "lib/property.h"
+#include "lib/unit.h"
 
 using namespace eosio;
 using namespace std;
@@ -17,7 +18,9 @@ namespace feesimple{
       contract(self),
       properties(_self,_self),
       floorplans(_self,_self),
-      flplanimgs(_self,_self){}
+      flplanimgs(_self,_self),
+      units(_self,_self),
+      termpricings(_self,_self){}
 
     // PROPERTY TABLE -----------------------------------------------------------
 
@@ -44,6 +47,8 @@ namespace feesimple{
       require_auth(owner);
 
       auto iter = properties.find(id);
+      eosio_assert(iter != properties.end(), "Property does not exist");
+
       properties.modify( iter, 0, [&]( auto& row) {
         row.name        = name;
         row.address_1   = address_1;
@@ -64,6 +69,8 @@ namespace feesimple{
       eosio_assert(floorplan == propidx.end(), "Foreign key constrant violation: row referenced on floorplans");
 
       auto iter = properties.find(id);
+      eosio_assert(iter != properties.end(), "Property does not exist");
+
       properties.erase(iter);
     }
 
@@ -100,6 +107,8 @@ namespace feesimple{
       require_auth(owner);
 
       auto iter = floorplans.find(id);
+      eosio_assert(iter != floorplans.end(), "Floor Plan does not exist");
+
       floorplans.modify(iter, 0, [&] (auto& row) {
         row.property_id = property_id;
         row.name        = name;
@@ -122,10 +131,12 @@ namespace feesimple{
       eosio_assert(flplanimg == floorplanidx.end(), "Foreign key constrant violation: row referenced on flplanimgs");
 
       auto iter = floorplans.find(id);
+      eosio_assert(iter != floorplans.end(), "Floor Plan does not exist");
+
       floorplans.erase(iter);
     }
 
-    // FLOOR IMAGE TABLE --------------------------------------------------------
+    // FLOOR IMAGE TABLE -------------------------------------------------------
 
     // @abi action
     void addflplanimg(name owner, uint64_t floorplan_id, checksum256 image_hash,
@@ -146,6 +157,8 @@ namespace feesimple{
       require_auth(owner);
 
       auto iter = flplanimgs.find(id);
+      eosio_assert(iter != flplanimgs.end(), "Floor Plan Image does not exist");
+
       flplanimgs.modify(iter, 0, [&] (auto& row) {
         row.floorplan_id = floorplan_id;
         row.image_hash   = image_hash;
@@ -158,7 +171,123 @@ namespace feesimple{
       require_auth(owner);
 
       auto iter = flplanimgs.find(id);
+      eosio_assert(iter != flplanimgs.end(), "Floor Plan Image does not exist");
+
       flplanimgs.erase(iter);
+    }
+
+    // UNIT TABLE --------------------------------------------------------
+
+    // @abi action
+    void addunit(name owner, uint64_t floorplan_id, uint64_t property_id,
+    string name, uint64_t bedrooms, uint64_t bathrooms, uint64_t sq_ft_min,
+    uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, string status,
+    uint64_t date_available){
+      require_auth(owner);
+
+      units.emplace(owner, [&] (auto& row) {
+        row.id             = units.available_primary_key();
+        row.floorplan_id   = floorplan_id;
+        row.property_id    = property_id;
+        row.name           = name;
+        row.bedrooms       = bedrooms;
+        row.bathrooms      = bathrooms;
+        row.sq_ft_min      = sq_ft_min;
+        row.sq_ft_max      = sq_ft_max;
+        row.rent_min       = rent_min;
+        row.rent_max       = rent_max;
+        row.status         = status;
+        row.date_available = date_available;
+      });
+    }
+
+    // @abi action
+    void modunit(name owner,uint64_t id , uint64_t floorplan_id, uint64_t property_id,
+    string name, uint64_t bedrooms, uint64_t bathrooms, uint64_t sq_ft_min,
+    uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, string status,
+    uint64_t date_available) {
+      require_auth(owner);
+
+      auto iter = units.find(id);
+      eosio_assert(iter != units.end(), "Unit does not exist");
+
+      units.modify(iter, 0, [&] (auto& row) {
+        row.floorplan_id   = floorplan_id;
+        row.property_id    = property_id;
+        row.name           = name;
+        row.bedrooms       = bedrooms;
+        row.bathrooms      = bathrooms;
+        row.sq_ft_min      = sq_ft_min;
+        row.sq_ft_max      = sq_ft_max;
+        row.rent_min       = rent_min;
+        row.rent_max       = rent_max;
+        row.status         = status;
+        row.date_available = date_available;
+      });
+    }
+
+    // @abi action
+    void delunit(name owner, uint64_t id) {
+      require_auth(owner);
+
+      auto iter = units.find(id);
+      eosio_assert(iter != units.end(), "Unit does not exist");
+
+      auto termpricingidx = termpricings.get_index<N(unit_id)>();
+      auto termpricing = termpricingidx.find(id);
+      eosio_assert(termpricing == termpricingidx.end(), "Foreign key constrant violation: row referenced on termpricings");
+
+      units.erase(iter);
+    }
+
+    // TERM PRICE TABLE -----------------------------------------------------
+
+    // @abi action
+    void addtmpricing(name owner, uint64_t unit_id, uint64_t rent,
+    uint64_t term, uint64_t start_date, uint64_t end_date){
+      require_auth(owner);
+
+      auto iter = units.find(unit_id);
+      eosio_assert(iter != units.end(), "Unit does not exist");
+
+      termpricings.emplace(owner, [&] (auto& row) {
+        row.id         = termpricings.available_primary_key();
+        row.unit_id    = unit_id;
+        row.rent       = rent;
+        row.term       = term;
+        row.start_date = start_date;
+        row.end_date   = end_date;
+      });
+    }
+
+    // @abi action
+    void modtmpricing(name owner, uint64_t id, uint64_t unit_id, uint64_t rent,
+    uint64_t term, uint64_t start_date, uint64_t end_date) {
+      require_auth(owner);
+
+      auto tpiter = termpricings.find(id);
+      eosio_assert(tpiter != termpricings.end(), "Price term does not exist");
+
+      auto uiter = units.find(unit_id);
+      eosio_assert(uiter != units.end(), "Unit does not exist");
+
+      termpricings.modify(tpiter, 0, [&] (auto& row) {
+        row.unit_id    = unit_id;
+        row.rent       = rent;
+        row.term       = term;
+        row.start_date = start_date;
+        row.end_date   = end_date;
+      });
+    }
+
+    // @abi action
+    void deltmpricing(name owner, uint64_t id) {
+      require_auth(owner);
+
+      auto iter = termpricings.find(id);
+      eosio_assert(iter != termpricings.end(), "Price term does not exist");
+
+      termpricings.erase(iter);
     }
 
   private:
@@ -175,7 +304,18 @@ namespace feesimple{
       > flplanimg_index;
     flplanimg_index flplanimgs;
 
+    typedef multi_index<N(unit), unit,
+      indexed_by< N(floorplan_id), const_mem_fun<unit, uint64_t, &unit::by_floorplan>>,
+      indexed_by< N(property_id), const_mem_fun<unit, uint64_t, &unit::by_property>>
+      > unit_index;
+    unit_index units;
+
+    typedef multi_index<N(termpricing), termpricing,
+      indexed_by< N(unit_id), const_mem_fun<termpricing, uint64_t, &termpricing::by_unit>>
+      > termpricing_index;
+    termpricing_index termpricings;
+
   };
 
-  EOSIO_ABI(inventory,(addproperty)(modproperty)(delproperty)(addfloorplan)(modfloorplan)(delfloorplan)(addflplanimg)(modflplanimg)(delflplanimg));
+  EOSIO_ABI(inventory,(addproperty)(modproperty)(delproperty)(addfloorplan)(modfloorplan)(delfloorplan)(addflplanimg)(modflplanimg)(delflplanimg)(addunit)(modunit)(delunit)(addtmpricing)(modtmpricing)(deltmpricing));
 }
