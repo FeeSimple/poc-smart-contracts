@@ -1,3 +1,3 @@
-inventory/*
-!inventory/.gitkeep
+fsmanager/*
+!fsmanager/.gitkeep
 .DS_Store
