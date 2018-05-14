@@ -1,6 +1,6 @@
-# FeeSimple Inventory
+# FeeSimple Manager
 
-> Provides on-chain CRUD operations for inventory data.
+> Provides on-chain CRUD operations for property, event and guest management. data.
 
 ## Install
 
@@ -12,7 +12,7 @@ You must have `nodeos` running with an unlocked wallet.
 
 1. Run the command bellow to create an account for the contract. Swap $OWNER_KEY and $ACTIVE_KEY with yours. More information [here](https://github.com/EOSIO/eos/wiki/Tutorial-Getting-Started-With-Contracts).
 ```
-cleos create account eosio inv.code $OWNER_KEY $ACTIVE_KEY
+cleos create account eosio fsmgr.code $OWNER_KEY $ACTIVE_KEY
 ```
 2. Run `make reinstall` to rebuild and deploy the contract.
 
@@ -21,18 +21,18 @@ cleos create account eosio inv.code $OWNER_KEY $ACTIVE_KEY
 With an account named `user`:
 ##### Create Property
 ```
-cleos push action inv.code addproperty '["user","Abbey Road Studios","3 Abbey Road, St John`s Wood","2nd Floor","City of Westminster","London","123456",1]' -p user
+cleos push action fsmgr.code addproperty '["user","Abbey Road Studios","3 Abbey Road, St John`s Wood","2nd Floor","City of Westminster","London","123456",1]' -p user
 ```
 
 Should return:
 ```
 executed transaction: 3a6e65cde0666532030adaec49d75eef93bda81e5749b23d2d2d92af800007f6  296 bytes  131072 cycles
-#      inv.code <= inv.code::addproperty        {"owner":"user","name":"Abbey Road Studios, St John's Wood","address_1":"Abbey Road Studios","address_2":"2nd Floor","city":"City of Westminster","...
+#      fsmgr.code <= fsmgr.code::addproperty        {"owner":"user","name":"Abbey Road Studios, St John's Wood","address_1":"Abbey Road Studios","address_2":"2nd Floor","city":"City of Westminster","...
 
 ```
 ##### Read Property
 ```
-cleos get table inv.code inv.code property
+cleos get table fsmgr.code fsmgr.code property
 ```
 Should return:
 ```
@@ -56,11 +56,11 @@ Should return:
 
 With account named `user` and at property of `id=0`:
 ```
-cleos push action inv.code addfloorplan '["user",0,"floorplan1",2,3,750,800,1800,2500,7000]' -p user
+cleos push action fsmgr.code addfloorplan '["user",0,"floorplan1",2,3,750,800,1800,2500,7000]' -p user
 ```
 If we attempt to delete the referenced property, an assertion error will be thrown:
 ```
-cleos push action inv.code delproperty '["user",0]' -p user
+cleos push action fsmgr.code delproperty '["user",0]' -p user
 ```
 Output:
 ```

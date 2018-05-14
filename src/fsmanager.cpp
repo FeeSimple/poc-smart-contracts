@@ -1,26 +1,28 @@
 #include <eosiolib/eosio.hpp>
-#include <eosiolib/print.hpp>
 #include <eosiolib/multi_index.hpp>
-#include <eosiolib/asset.hpp>
 #include "lib/floorplan.h"
 #include "lib/property.h"
 #include "lib/unit.h"
+#include "lib/guest.h"
+#include "lib/event.h"
 
 using namespace eosio;
 using namespace std;
 
 namespace feesimple{
-  class inventory : contract {
+  class fsmanager : contract {
     using contract::contract;
 
   public:
-    inventory(account_name self):
+    fsmanager(account_name self):
       contract(self),
       properties(_self,_self),
       floorplans(_self,_self),
       flplanimgs(_self,_self),
       units(_self,_self),
-      termpricings(_self,_self){}
+      termpricings(_self,_self),
+      guests(_self,_self),
+      events(_self,_self){}
 
     // PROPERTY TABLE -----------------------------------------------------------
 
@@ -290,6 +292,102 @@ namespace feesimple{
       termpricings.erase(iter);
     }
 
+    // GUEST TABLE -----------------------------------------------------------
+
+    // @abi action
+    void addguest(name owner, string firstname, string lastname, string phone,
+    string email, string status) {
+      require_auth(owner);
+
+      guests.emplace(owner, [&] (auto& row) {
+        row.id        = guests.available_primary_key();
+        row.firstname = firstname;
+        row.lastname  = lastname;
+        row.phone     = phone;
+        row.email     = email;
+        row.status    = status;
+      });
+    }
+
+    // @abi action
+    void modguest(name owner, uint64_t id, string firstname, string lastname,
+    string phone, string email, string status) {
+      require_auth(owner);
+
+      auto iter = guests.find(id);
+      eosio_assert(iter != guests.end(), "Guest does not exist");
+
+      guests.modify( iter, 0, [&]( auto& row) {
+        row.firstname = firstname;
+        row.lastname  = lastname;
+        row.phone     = phone;
+        row.email     = email;
+        row.status    = status;
+      });
+
+    }
+
+    // @abi action
+    void delguest(name owner, uint64_t id) {
+      require_auth(owner);
+
+      auto guestsitr = guests.find(id);
+      eosio_assert(guestsitr != guests.end(), "Guest does not exist");
+
+      auto eventidx = events.get_index<N(guest_id)>();
+      auto event = eventidx.find(id);
+      eosio_assert(event != eventidx.end(), "Foreign key constrant violation: row referenced on events");
+
+      guests.erase(guestsitr);
+    }
+
+
+    // EVENT TABLE --------------------------------------------------------------
+
+    // @abi action
+    void addevent(name owner, uint64_t id_guest, string type, uint64_t date,
+    string source, string agent, string comments){
+      require_auth(owner);
+
+      events.emplace(owner, [&] (auto& row) {
+        row.id       = events.available_primary_key();
+        row.id_guest = id_guest;
+        row.type     = type;
+        row.date     = date;
+        row.source   = source;
+        row.agent    = agent;
+        row.comments = comments;
+      });
+    }
+
+    // @abi action
+    void modevent(name owner, uint64_t id, uint64_t id_guest, string type,
+    uint64_t date, string source, string agent, string comments) {
+      require_auth(owner);
+
+      auto iter = events.find(id);
+      eosio_assert(iter != events.end(), "Event does not exist");
+
+      events.modify( iter, 0, [&]( auto& row) {
+        row.id_guest = id_guest;
+        row.type     = type;
+        row.date     = date;
+        row.source   = source;
+        row.agent    = agent;
+        row.comments = comments;
+      });
+    }
+
+    // @abi action
+    void delevent(name owner, uint64_t id) {
+      require_auth(owner);
+
+      auto iter = events.find(id);
+      eosio_assert(iter != events.end(), "Event does not exist");
+
+      events.erase(iter);
+    }
+
   private:
     typedef multi_index<N(property), property> property_index;
     property_index  properties;
@@ -315,7 +413,15 @@ namespace feesimple{
       > termpricing_index;
     termpricing_index termpricings;
 
+    typedef multi_index<N(guest), guest> guest_index;
+    guest_index  guests;
+
+    typedef multi_index<N(event), event,
+      indexed_by< N(guest_id), const_mem_fun<event, uint64_t, &event::by_guest>>
+      > event_index;
+    event_index events;
+
   };
 
-  EOSIO_ABI(inventory,(addproperty)(modproperty)(delproperty)(addfloorplan)(modfloorplan)(delfloorplan)(addflplanimg)(modflplanimg)(delflplanimg)(addunit)(modunit)(delunit)(addtmpricing)(modtmpricing)(deltmpricing));
+  EOSIO_ABI(fsmanager,(addproperty)(modproperty)(delproperty)(addfloorplan)(modfloorplan)(delfloorplan)(addflplanimg)(modflplanimg)(delflplanimg)(addunit)(modunit)(delunit)(addtmpricing)(modtmpricing)(deltmpricing)(addguest)(modguest)(delguest)(addevent)(modevent)(delevent));
 }
