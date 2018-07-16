@@ -27,11 +27,11 @@ namespace feesimple{
     // PROPERTY TABLE -----------------------------------------------------------
 
     // @abi action
-    void addproperty(name owner, string name, string address_1, string address_2,
+    void addproperty(account_name author, string name, string address_1, string address_2,
       string city, string region, string postal_code, uint64_t unit_count) {
-      require_auth(owner);
+      require_auth(author);
 
-      properties.emplace(owner, [&] (auto& row) {
+      properties.emplace(author, [&] (auto& row) {
         row.id          = properties.available_primary_key();
         row.name        = name;
         row.address_1   = address_1;
@@ -44,9 +44,9 @@ namespace feesimple{
     }
 
     // @abi action
-    void modproperty(name owner, uint64_t id, string name, string address_1, string address_2,
+    void modproperty(account_name author, uint64_t id, string name, string address_1, string address_2,
       string city, string region, string postal_code, uint64_t unit_count) {
-      require_auth(owner);
+      require_auth(author);
 
       auto iter = properties.find(id);
       eosio_assert(iter != properties.end(), "Property does not exist");
@@ -63,8 +63,8 @@ namespace feesimple{
     }
 
     // @abi action
-    void delproperty(name owner, uint64_t id) {
-      require_auth(owner);
+    void delproperty(account_name author, uint64_t id) {
+      require_auth(author);
 
       auto propidx = floorplans.get_index<N(property_id)>();
       auto floorplan = propidx.find(id);
@@ -80,15 +80,15 @@ namespace feesimple{
     // FLOOR TABLE --------------------------------------------------------------
 
     // @abi action
-    void addfloorplan(name owner, uint64_t property_id, string name, uint64_t bedrooms,
+    void addfloorplan(account_name author, uint64_t property_id, string name, uint64_t bedrooms,
     uint64_t bathrooms, uint64_t sq_ft_min, uint64_t sq_ft_max, uint64_t rent_min,
     uint64_t rent_max, uint64_t deposit){
-      require_auth(owner);
+      require_auth(author);
 
       auto property = properties.find(property_id);
       eosio_assert(property != properties.end(), "Referenced property does not exist");
 
-      floorplans.emplace(owner, [&] (auto& row) {
+      floorplans.emplace(author, [&] (auto& row) {
         row.id          = floorplans.available_primary_key();
         row.property_id = property_id;
         row.name        = name;
@@ -103,10 +103,10 @@ namespace feesimple{
     }
 
     // @abi action
-    void modfloorplan(name owner, uint64_t id, uint64_t property_id, string name,
+    void modfloorplan(account_name author, uint64_t id, uint64_t property_id, string name,
     uint64_t bedrooms, uint64_t bathrooms, uint64_t sq_ft_min,
     uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, uint64_t deposit) {
-      require_auth(owner);
+      require_auth(author);
 
       auto iter = floorplans.find(id);
       eosio_assert(iter != floorplans.end(), "Floor Plan does not exist");
@@ -125,8 +125,8 @@ namespace feesimple{
     }
 
     // @abi action
-    void delfloorplan(name owner, uint64_t id) {
-      require_auth(owner);
+    void delfloorplan(account_name author, uint64_t id) {
+      require_auth(author);
 
       auto floorplanidx = flplanimgs.get_index<N(floorplan_id)>();
       auto flplanimg = floorplanidx.find(id);
@@ -141,11 +141,11 @@ namespace feesimple{
     // FLOOR IMAGE TABLE -------------------------------------------------------
 
     // @abi action
-    void addflplanimg(name owner, uint64_t floorplan_id, checksum256 image_hash,
+    void addflplanimg(account_name author, uint64_t floorplan_id, checksum256 image_hash,
       string ipfs_address){
-      require_auth(owner);
+      require_auth(author);
 
-      flplanimgs.emplace(owner, [&] (auto& row) {
+      flplanimgs.emplace(author, [&] (auto& row) {
         row.id           = flplanimgs.available_primary_key();
         row.floorplan_id = floorplan_id;
         row.image_hash   = image_hash;
@@ -154,9 +154,9 @@ namespace feesimple{
     }
 
     // @abi action
-    void modflplanimg(name owner, uint64_t id, uint64_t floorplan_id,
+    void modflplanimg(account_name author, uint64_t id, uint64_t floorplan_id,
       checksum256 image_hash, string ipfs_address) {
-      require_auth(owner);
+      require_auth(author);
 
       auto iter = flplanimgs.find(id);
       eosio_assert(iter != flplanimgs.end(), "Floor Plan Image does not exist");
@@ -169,8 +169,8 @@ namespace feesimple{
     }
 
     // @abi action
-    void delflplanimg(name owner, uint64_t id) {
-      require_auth(owner);
+    void delflplanimg(account_name author, uint64_t id) {
+      require_auth(author);
 
       auto iter = flplanimgs.find(id);
       eosio_assert(iter != flplanimgs.end(), "Floor Plan Image does not exist");
@@ -181,13 +181,13 @@ namespace feesimple{
     // UNIT TABLE --------------------------------------------------------
 
     // @abi action
-    void addunit(name owner, uint64_t floorplan_id, uint64_t property_id,
+    void addunit(account_name author, uint64_t floorplan_id, uint64_t property_id,
     string name, uint64_t bedrooms, uint64_t bathrooms, uint64_t sq_ft_min,
     uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, string status,
     uint64_t date_available){
-      require_auth(owner);
+      require_auth(author);
 
-      units.emplace(owner, [&] (auto& row) {
+      units.emplace(author, [&] (auto& row) {
         row.id             = units.available_primary_key();
         row.floorplan_id   = floorplan_id;
         row.property_id    = property_id;
@@ -204,11 +204,11 @@ namespace feesimple{
     }
 
     // @abi action
-    void modunit(name owner,uint64_t id , uint64_t floorplan_id, uint64_t property_id,
+    void modunit(account_name author,uint64_t id , uint64_t floorplan_id, uint64_t property_id,
     string name, uint64_t bedrooms, uint64_t bathrooms, uint64_t sq_ft_min,
     uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, string status,
     uint64_t date_available) {
-      require_auth(owner);
+      require_auth(author);
 
       auto iter = units.find(id);
       eosio_assert(iter != units.end(), "Unit does not exist");
@@ -229,8 +229,8 @@ namespace feesimple{
     }
 
     // @abi action
-    void delunit(name owner, uint64_t id) {
-      require_auth(owner);
+    void delunit(account_name author, uint64_t id) {
+      require_auth(author);
 
       auto iter = units.find(id);
       eosio_assert(iter != units.end(), "Unit does not exist");
@@ -245,14 +245,14 @@ namespace feesimple{
     // TERM PRICE TABLE -----------------------------------------------------
 
     // @abi action
-    void addtmpricing(name owner, uint64_t unit_id, uint64_t rent,
+    void addtmpricing(account_name author, uint64_t unit_id, uint64_t rent,
     uint64_t term, uint64_t start_date, uint64_t end_date){
-      require_auth(owner);
+      require_auth(author);
 
       auto iter = units.find(unit_id);
       eosio_assert(iter != units.end(), "Unit does not exist");
 
-      termpricings.emplace(owner, [&] (auto& row) {
+      termpricings.emplace(author, [&] (auto& row) {
         row.id         = termpricings.available_primary_key();
         row.unit_id    = unit_id;
         row.rent       = rent;
@@ -263,9 +263,9 @@ namespace feesimple{
     }
 
     // @abi action
-    void modtmpricing(name owner, uint64_t id, uint64_t unit_id, uint64_t rent,
+    void modtmpricing(account_name author, uint64_t id, uint64_t unit_id, uint64_t rent,
     uint64_t term, uint64_t start_date, uint64_t end_date) {
-      require_auth(owner);
+      require_auth(author);
 
       auto tpiter = termpricings.find(id);
       eosio_assert(tpiter != termpricings.end(), "Price term does not exist");
@@ -283,8 +283,8 @@ namespace feesimple{
     }
 
     // @abi action
-    void deltmpricing(name owner, uint64_t id) {
-      require_auth(owner);
+    void deltmpricing(account_name author, uint64_t id) {
+      require_auth(author);
 
       auto iter = termpricings.find(id);
       eosio_assert(iter != termpricings.end(), "Price term does not exist");
@@ -295,11 +295,11 @@ namespace feesimple{
     // GUEST TABLE -----------------------------------------------------------
 
     // @abi action
-    void addguest(name owner, string firstname, string lastname, string phone,
+    void addguest(account_name author, string firstname, string lastname, string phone,
     string email, string status) {
-      require_auth(owner);
+      require_auth(author);
 
-      guests.emplace(owner, [&] (auto& row) {
+      guests.emplace(author, [&] (auto& row) {
         row.id        = guests.available_primary_key();
         row.firstname = firstname;
         row.lastname  = lastname;
@@ -310,9 +310,9 @@ namespace feesimple{
     }
 
     // @abi action
-    void modguest(name owner, uint64_t id, string firstname, string lastname,
+    void modguest(account_name author, uint64_t id, string firstname, string lastname,
     string phone, string email, string status) {
-      require_auth(owner);
+      require_auth(author);
 
       auto iter = guests.find(id);
       eosio_assert(iter != guests.end(), "Guest does not exist");
@@ -328,8 +328,8 @@ namespace feesimple{
     }
 
     // @abi action
-    void delguest(name owner, uint64_t id) {
-      require_auth(owner);
+    void delguest(account_name author, uint64_t id) {
+      require_auth(author);
 
       auto guestsitr = guests.find(id);
       eosio_assert(guestsitr != guests.end(), "Guest does not exist");
@@ -345,11 +345,11 @@ namespace feesimple{
     // EVENT TABLE --------------------------------------------------------------
 
     // @abi action
-    void addevent(name owner, uint64_t id_guest, string type, uint64_t date,
+    void addevent(account_name author, uint64_t id_guest, string type, uint64_t date,
     string source, string agent, string comments){
-      require_auth(owner);
+      require_auth(author);
 
-      events.emplace(owner, [&] (auto& row) {
+      events.emplace(author, [&] (auto& row) {
         row.id       = events.available_primary_key();
         row.id_guest = id_guest;
         row.type     = type;
@@ -361,9 +361,9 @@ namespace feesimple{
     }
 
     // @abi action
-    void modevent(name owner, uint64_t id, uint64_t id_guest, string type,
+    void modevent(account_name author, uint64_t id, uint64_t id_guest, string type,
     uint64_t date, string source, string agent, string comments) {
-      require_auth(owner);
+      require_auth(author);
 
       auto iter = events.find(id);
       eosio_assert(iter != events.end(), "Event does not exist");
@@ -379,8 +379,8 @@ namespace feesimple{
     }
 
     // @abi action
-    void delevent(name owner, uint64_t id) {
-      require_auth(owner);
+    void delevent(account_name author, uint64_t id) {
+      require_auth(author);
 
       auto iter = events.find(id);
       eosio_assert(iter != events.end(), "Event does not exist");

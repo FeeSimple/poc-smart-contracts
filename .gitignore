@@ -3,3 +3,4 @@ fsmanager/*
 dapphub/*
 !dapphub/.gitkeep
 .DS_Store
+.env
