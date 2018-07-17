@@ -39,7 +39,7 @@ Should return:
 {
   "rows": [{
       "id": 0,
-      "owner": "user",
+      "author": "user",
       "name": "Abbey Road Studios",
       "address_1": "3 Abbey Road, St John`s Wood",
       "address_2": "2nd Floor",

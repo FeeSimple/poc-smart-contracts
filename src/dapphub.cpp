@@ -18,10 +18,10 @@ namespace feesimple{
     // DAPP TABLE -----------------------------------------------------------    
 
     // @abi action
-    void adddapp(name owner, string name, string category, string account) {
-      require_auth(owner);
+    void adddapp(name author, string name, string category, string account) {
+      require_auth(author);
 
-      dapps.emplace(owner, [&] (auto& row) {
+      dapps.emplace(author, [&] (auto& row) {
         row.id       = dapps.available_primary_key();
         row.name     = name;
         row.category = category;
@@ -30,8 +30,8 @@ namespace feesimple{
     }
 
     // @abi action
-    void moddapp(name owner, uint64_t id, string name, string category, string account) {
-      require_auth(owner);
+    void moddapp(name author, uint64_t id, string name, string category, string account) {
+      require_auth(author);
 
       auto iter = dapps.find(id);
       eosio_assert(iter != dapps.end(), "Dapp does not exist");
@@ -44,8 +44,8 @@ namespace feesimple{
     }
 
     // @abi action
-    void deldapp(name owner, uint64_t id) {
-      require_auth(owner);      
+    void deldapp(name author, uint64_t id) {
+      require_auth(author);      
 
       auto iter = dapps.find(id);
       eosio_assert(iter != dapps.end(), "Dapp does not exist");
