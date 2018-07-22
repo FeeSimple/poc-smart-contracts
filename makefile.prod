@@ -1,6 +1,7 @@
 # Variables set on .env
 
 include .env
+
 export
 
 all:
@@ -38,3 +39,6 @@ deploy:
 pushFakeData:
 	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 push action $(FSMGR_ACCOUNT_NAME) addproperty '{"author":"$(FSMGR_ACCOUNT_NAME)","name":"Abbey Road Studios","address_1":"3 Abbey Road, St John`s Wood","address_2":"2nd Floor","city":"City of Westminster","region":"London","postal_code":"123456","unit_count":1}' --permission $(FSMGR_ACCOUNT_NAME)
 	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 push action $(FSMGR_ACCOUNT_NAME) addproperty '{"author":"$(FSMGR_ACCOUNT_NAME)","name":"Lincoln Building","address_1":"Herriman St, 545","address_2":"5th Block","city":"Salt Lake City","region":"Park City","postal_code":"58086","unit_count":7}' --permission $(FSMGR_ACCOUNT_NAME)
+
+getData:
+	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 get table $(FSMGR_ACCOUNT_NAME) $(FSMGR_ACCOUNT_NAME) property

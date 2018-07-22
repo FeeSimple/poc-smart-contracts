@@ -1,0 +1,41 @@
+# Variables set on .env
+
+include .env.dev
+export
+
+all:
+	make rebuild
+
+rebuild:
+	make clean
+	make build
+
+clean:
+	rm -f fsmanager/* !fsmanager/.gitkeep
+	rm -f dapphub/* !dapphub/.gitkeep
+
+build:
+	eosiocpp -o fsmanager/fsmanager.wast src/fsmanager.cpp
+	eosiocpp -g fsmanager/fsmanager.abi src/fsmanager.cpp
+	eosiocpp -o dapphub/dapphub.wast src/dapphub.cpp
+	eosiocpp -g dapphub/dapphub.abi src/dapphub.cpp
+
+unlockLocal:
+	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888  wallet unlock -n dev --password $(WALLET_PWD)
+
+importKeysLocal:
+	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 wallet import $(EOSIO_PRIV) -n dev
+	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 wallet import $(FSMGR_PRIV) -n dev
+
+setupaccLocal:
+	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 create account $(EOSIO_ACCOUNT_NAME) $(FSMGR_ACCOUNT_NAME) $(FSMGR_PUB)
+
+deployLocal:
+	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 set contract $(FSMGR_ACCOUNT_NAME) ~/Documents/feesimple/feesimple_contracts/fsmanager ~/Documents/feesimple/feesimple_contracts/fsmanager/fsmanager.wast ~/Documents/feesimple/feesimple_contracts/fsmanager/fsmanager.abi
+
+pushFakeDataLocal:
+	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 push action $(FSMGR_ACCOUNT_NAME) addproperty '{"author":"$(FSMGR_ACCOUNT_NAME)","name":"Abbey Road Studios","address_1":"3 Abbey Road, St John`s Wood","address_2":"2nd Floor","city":"City of Westminster","region":"London","postal_code":"123456","unit_count":1}' --permission $(FSMGR_ACCOUNT_NAME)
+	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 push action $(FSMGR_ACCOUNT_NAME) addproperty '{"author":"$(FSMGR_ACCOUNT_NAME)","name":"Lincoln Building","address_1":"Herriman St, 545","address_2":"5th Block","city":"Salt Lake City","region":"Park City","postal_code":"58086","unit_count":7}' --permission $(FSMGR_ACCOUNT_NAME)
+
+getDataLocal:
+	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 get table $(FSMGR_ACCOUNT_NAME) $(FSMGR_ACCOUNT_NAME) property
