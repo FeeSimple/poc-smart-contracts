@@ -2,8 +2,6 @@
 
 include .env
 
-export
-
 all:
 	make rebuild
 
