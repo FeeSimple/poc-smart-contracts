@@ -14,15 +14,7 @@ namespace feesimple{
     using contract::contract;
 
   public:
-    fsmanager(account_name self):
-      contract(self),
-      properties(_self,_self),
-      floorplans(_self,_self),
-      flplanimgs(_self,_self),
-      units(_self,_self),
-      termpricings(_self,_self),
-      guests(_self,_self),
-      events(_self,_self){}
+    fsmanager(account_name self):contract(self){}
 
     // PROPERTY TABLE -----------------------------------------------------------
 
@@ -31,6 +23,7 @@ namespace feesimple{
       string city, string region, string postal_code, uint64_t unit_count) {
       require_auth(author);
 
+      property_index properties(_self,author);
       properties.emplace(author, [&] (auto& row) {
         row.id          = properties.available_primary_key();
         row.name        = name;
@@ -48,6 +41,7 @@ namespace feesimple{
       string city, string region, string postal_code, uint64_t unit_count) {
       require_auth(author);
 
+      property_index properties(_self,author);
       auto iter = properties.find(id);
       eosio_assert(iter != properties.end(), "Property does not exist");
 
@@ -65,11 +59,13 @@ namespace feesimple{
     // @abi action
     void delproperty(account_name author, uint64_t id) {
       require_auth(author);
-
+      
+      floorplan_index floorplans(_self,author);
       auto propidx = floorplans.get_index<N(property_id)>();
       auto floorplan = propidx.find(id);
       eosio_assert(floorplan == propidx.end(), "Foreign key constrant violation: row referenced on floorplans");
 
+      property_index properties(_self,author);
       auto iter = properties.find(id);
       eosio_assert(iter != properties.end(), "Property does not exist");
 
@@ -85,9 +81,11 @@ namespace feesimple{
     uint64_t rent_max, uint64_t deposit){
       require_auth(author);
 
+      property_index properties(_self,author);
       auto property = properties.find(property_id);
       eosio_assert(property != properties.end(), "Referenced property does not exist");
 
+      floorplan_index floorplans(_self,author);
       floorplans.emplace(author, [&] (auto& row) {
         row.id          = floorplans.available_primary_key();
         row.property_id = property_id;
@@ -108,9 +106,10 @@ namespace feesimple{
     uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, uint64_t deposit) {
       require_auth(author);
 
+      floorplan_index floorplans(_self,author);
       auto iter = floorplans.find(id);
       eosio_assert(iter != floorplans.end(), "Floor Plan does not exist");
-
+    
       floorplans.modify(iter, 0, [&] (auto& row) {
         row.property_id = property_id;
         row.name        = name;
@@ -128,10 +127,12 @@ namespace feesimple{
     void delfloorplan(account_name author, uint64_t id) {
       require_auth(author);
 
+      flplanimg_index flplanimgs(_self,author);
       auto floorplanidx = flplanimgs.get_index<N(floorplan_id)>();
       auto flplanimg = floorplanidx.find(id);
       eosio_assert(flplanimg == floorplanidx.end(), "Foreign key constrant violation: row referenced on flplanimgs");
 
+      floorplan_index floorplans(_self,author);
       auto iter = floorplans.find(id);
       eosio_assert(iter != floorplans.end(), "Floor Plan does not exist");
 
@@ -145,6 +146,7 @@ namespace feesimple{
       string ipfs_address){
       require_auth(author);
 
+      flplanimg_index flplanimgs(_self,author);
       flplanimgs.emplace(author, [&] (auto& row) {
         row.id           = flplanimgs.available_primary_key();
         row.floorplan_id = floorplan_id;
@@ -158,6 +160,7 @@ namespace feesimple{
       checksum256 image_hash, string ipfs_address) {
       require_auth(author);
 
+      flplanimg_index flplanimgs(_self,author);
       auto iter = flplanimgs.find(id);
       eosio_assert(iter != flplanimgs.end(), "Floor Plan Image does not exist");
 
@@ -172,6 +175,7 @@ namespace feesimple{
     void delflplanimg(account_name author, uint64_t id) {
       require_auth(author);
 
+      flplanimg_index flplanimgs(_self,author);
       auto iter = flplanimgs.find(id);
       eosio_assert(iter != flplanimgs.end(), "Floor Plan Image does not exist");
 
@@ -187,6 +191,7 @@ namespace feesimple{
     uint64_t date_available){
       require_auth(author);
 
+      unit_index units(_self,author);
       units.emplace(author, [&] (auto& row) {
         row.id             = units.available_primary_key();
         row.floorplan_id   = floorplan_id;
@@ -210,6 +215,7 @@ namespace feesimple{
     uint64_t date_available) {
       require_auth(author);
 
+      unit_index units(_self,author);
       auto iter = units.find(id);
       eosio_assert(iter != units.end(), "Unit does not exist");
 
@@ -232,9 +238,11 @@ namespace feesimple{
     void delunit(account_name author, uint64_t id) {
       require_auth(author);
 
+      unit_index units(_self,author);
       auto iter = units.find(id);
       eosio_assert(iter != units.end(), "Unit does not exist");
 
+      termpricing_index termpricings(_self,author);
       auto termpricingidx = termpricings.get_index<N(unit_id)>();
       auto termpricing = termpricingidx.find(id);
       eosio_assert(termpricing == termpricingidx.end(), "Foreign key constrant violation: row referenced on termpricings");
@@ -249,9 +257,11 @@ namespace feesimple{
     uint64_t term, uint64_t start_date, uint64_t end_date){
       require_auth(author);
 
+      unit_index units(_self,author);
       auto iter = units.find(unit_id);
       eosio_assert(iter != units.end(), "Unit does not exist");
 
+      termpricing_index termpricings(_self,author);
       termpricings.emplace(author, [&] (auto& row) {
         row.id         = termpricings.available_primary_key();
         row.unit_id    = unit_id;
@@ -267,9 +277,11 @@ namespace feesimple{
     uint64_t term, uint64_t start_date, uint64_t end_date) {
       require_auth(author);
 
+      termpricing_index termpricings(_self,author);
       auto tpiter = termpricings.find(id);
       eosio_assert(tpiter != termpricings.end(), "Price term does not exist");
 
+      unit_index units(_self,author);
       auto uiter = units.find(unit_id);
       eosio_assert(uiter != units.end(), "Unit does not exist");
 
@@ -285,7 +297,8 @@ namespace feesimple{
     // @abi action
     void deltmpricing(account_name author, uint64_t id) {
       require_auth(author);
-
+      
+      termpricing_index termpricings(_self,author);
       auto iter = termpricings.find(id);
       eosio_assert(iter != termpricings.end(), "Price term does not exist");
 
@@ -299,6 +312,7 @@ namespace feesimple{
     string email, string status) {
       require_auth(author);
 
+      guest_index guests(_self,author);
       guests.emplace(author, [&] (auto& row) {
         row.id        = guests.available_primary_key();
         row.firstname = firstname;
@@ -314,6 +328,7 @@ namespace feesimple{
     string phone, string email, string status) {
       require_auth(author);
 
+      guest_index guests(_self,author);
       auto iter = guests.find(id);
       eosio_assert(iter != guests.end(), "Guest does not exist");
 
@@ -331,9 +346,11 @@ namespace feesimple{
     void delguest(account_name author, uint64_t id) {
       require_auth(author);
 
+      guest_index guests(_self,author);      
       auto guestsitr = guests.find(id);
       eosio_assert(guestsitr != guests.end(), "Guest does not exist");
 
+      event_index events(_self,author);
       auto eventidx = events.get_index<N(guest_id)>();
       auto event = eventidx.find(id);
       eosio_assert(event != eventidx.end(), "Foreign key constrant violation: row referenced on events");
@@ -349,6 +366,7 @@ namespace feesimple{
     string source, string agent, string comments){
       require_auth(author);
 
+      event_index events(_self,author);
       events.emplace(author, [&] (auto& row) {
         row.id       = events.available_primary_key();
         row.id_guest = id_guest;
@@ -365,6 +383,7 @@ namespace feesimple{
     uint64_t date, string source, string agent, string comments) {
       require_auth(author);
 
+      event_index events(_self,author);
       auto iter = events.find(id);
       eosio_assert(iter != events.end(), "Event does not exist");
 
@@ -382,6 +401,7 @@ namespace feesimple{
     void delevent(account_name author, uint64_t id) {
       require_auth(author);
 
+      event_index events(_self,author);
       auto iter = events.find(id);
       eosio_assert(iter != events.end(), "Event does not exist");
 
@@ -389,38 +409,30 @@ namespace feesimple{
     }
 
   private:
-    typedef multi_index<N(property), property> property_index;
-    property_index  properties;
+    typedef multi_index<N(property), property> property_index;    
 
     typedef multi_index<N(floorplan), floorplan,
       indexed_by< N(property_id), const_mem_fun<floorplan, uint64_t, &floorplan::by_property>>
       > floorplan_index;
-    floorplan_index floorplans;
 
     typedef multi_index<N(floorplanimg), floorplanimg,
       indexed_by< N(floorplan_id), const_mem_fun<floorplanimg, uint64_t, &floorplanimg::by_floorplan>>
       > flplanimg_index;
-    flplanimg_index flplanimgs;
 
     typedef multi_index<N(unit), unit,
       indexed_by< N(floorplan_id), const_mem_fun<unit, uint64_t, &unit::by_floorplan>>,
       indexed_by< N(property_id), const_mem_fun<unit, uint64_t, &unit::by_property>>
       > unit_index;
-    unit_index units;
 
     typedef multi_index<N(termpricing), termpricing,
       indexed_by< N(unit_id), const_mem_fun<termpricing, uint64_t, &termpricing::by_unit>>
-      > termpricing_index;
-    termpricing_index termpricings;
+      > termpricing_index;    
 
     typedef multi_index<N(guest), guest> guest_index;
-    guest_index  guests;
 
     typedef multi_index<N(event), event,
       indexed_by< N(guest_id), const_mem_fun<event, uint64_t, &event::by_guest>>
       > event_index;
-    event_index events;
-
   };
 
   EOSIO_ABI(fsmanager,(addproperty)(modproperty)(delproperty)(addfloorplan)(modfloorplan)(delfloorplan)(addflplanimg)(modflplanimg)(delflplanimg)(addunit)(modunit)(delunit)(addtmpricing)(modtmpricing)(deltmpricing)(addguest)(modguest)(delguest)(addevent)(modevent)(delevent));

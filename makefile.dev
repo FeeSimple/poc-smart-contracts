@@ -3,11 +3,12 @@
 include .env.dev
 
 all:
-	make rebuild
-
-remake:
-	make clean
-	make build
+	rm -f fsmanager/* !fsmanager/.gitkeep
+	rm -f dapphub/* !dapphub/.gitkeep
+	eosiocpp -o fsmanager/fsmanager.wast src/fsmanager.cpp
+	eosiocpp -g fsmanager/fsmanager.abi src/fsmanager.cpp
+	eosiocpp -o dapphub/dapphub.wast src/dapphub.cpp
+	eosiocpp -g dapphub/dapphub.abi src/dapphub.cpp
 
 clean:
 	rm -f fsmanager/* !fsmanager/.gitkeep

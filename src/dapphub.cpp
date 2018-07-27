@@ -11,9 +11,7 @@ namespace feesimple{
     using contract::contract;
 
   public:
-    dapphub(account_name self):
-      contract(self),
-      dapps(_self,_self){}
+    dapphub(account_name self):contract(self){}      
 
     // DAPP TABLE -----------------------------------------------------------    
 
@@ -21,6 +19,7 @@ namespace feesimple{
     void adddapp(name author, string name, string category, string account) {
       require_auth(author);
 
+      dapp_index dapps(_self,author);
       dapps.emplace(author, [&] (auto& row) {
         row.id       = dapps.available_primary_key();
         row.name     = name;
@@ -33,6 +32,7 @@ namespace feesimple{
     void moddapp(name author, uint64_t id, string name, string category, string account) {
       require_auth(author);
 
+      dapp_index dapps(_self,author);
       auto iter = dapps.find(id);
       eosio_assert(iter != dapps.end(), "Dapp does not exist");
 
@@ -47,7 +47,8 @@ namespace feesimple{
     void deldapp(name author, uint64_t id) {
       require_auth(author);      
 
-      auto iter = dapps.find(id);
+      dapp_index dapps(_self,author);
+      auto iter = dapps.find(id); 
       eosio_assert(iter != dapps.end(), "Dapp does not exist");
 
       dapps.erase(iter);
@@ -55,7 +56,6 @@ namespace feesimple{
 
   private:
     typedef multi_index<N(dapp), dapp> dapp_index;
-    dapp_index dapps;
   };
 
   EOSIO_ABI(dapphub,(adddapp)(moddapp)(deldapp));
