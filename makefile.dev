@@ -27,11 +27,13 @@ importKeysLocal:
 	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 wallet import $(EOSIO_PRIV) -n dev
 	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 wallet import $(FSMGR_PRIV) -n dev
 	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 wallet import $(USR_PRIV) -n dev
+	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 wallet import $(MTS_PRIV) -n dev
 
 setupaccLocal:
 	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 create account $(EOSIO_ACCOUNT_NAME) $(FSMGR_ACCOUNT_NAME) $(FSMGR_PUB)
 	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 create account $(EOSIO_ACCOUNT_NAME) $(USR_ACCOUNT_NAME) $(USR_PUB)
 	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 create account $(EOSIO_ACCOUNT_NAME) $(USRB_ACCOUNT_NAME) $(USRB_PUB)
+	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 create account $(EOSIO_ACCOUNT_NAME) $(MTS_ACCOUNT_NAME) $(MTS_PUB)
 
 deployLocal:
 	cleos --wallet-url http://127.0.0.1:6666 --url http://127.0.0.1:8888 set contract $(FSMGR_ACCOUNT_NAME) ~/Documents/feesimple/feesimple_contracts/fsmanager ~/Documents/feesimple/feesimple_contracts/fsmanager/fsmanager.wast ~/Documents/feesimple/feesimple_contracts/fsmanager/fsmanager.abi
