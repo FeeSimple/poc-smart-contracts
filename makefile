@@ -30,7 +30,7 @@ importKeysStage:
 	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 wallet import $(MTS_PRIV) -n dev
 
 setupaccStage:
-	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 system newaccount --stake-net "1 XFS" --stake-cpu "1 XFS" --buy-ram "1 XFS" $(MTS_ACCOUNT_NAME) $(FSMGR_ACCOUNT_NAME) $(MTS_PUB) $(FSMGR_PUB)
+	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 system newaccount --stake-net "1 XFS" --stake-cpu "1 XFS" --buy-ram "13 XFS" $(MTS_ACCOUNT_NAME) $(FSMGR_ACCOUNT_NAME) $(MTS_PUB) $(FSMGR_PUB)
 
 buyRamMatheusStage:
 	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 system buyram $(MTS_ACCOUNT_NAME) $(MTS_ACCOUNT_NAME) "1 XFS"
@@ -42,7 +42,7 @@ sellRamStage:
 	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 system sellram $(MTS_ACCOUNT_NAME) 100000
 
 deployStage:
-	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 set contract $(FSMGR_ACCOUNT_NAME) ~/Documents/feesimple/feesimple_contracts/fsmanager ~/Documents/feesimple/feesimple_contracts/fsmanager/fsmanager.wast ~/Documents/feesimple/feesimple_contracts/fsmanager/fsmanager.abi
+	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 set contract $(FSMGR_ACCOUNT_NAME) ~/Documents/feesimple/poc-smart-contracts/fsmanager ~/Documents/feesimple/poc-smart-contracts/fsmanager/fsmanager.wast ~/Documents/feesimple/poc-smart-contracts/fsmanager/fsmanager.abi
 
 pushFakeDataStage:
 	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 push action $(FSMGR_ACCOUNT_NAME) addproperty '{"author":"$(USR_ACCOUNT_NAME)","name":"Abbey Road Studios","address_1":"3 Abbey Road, St John`s Wood","address_2":"2nd Floor","city":"City of Westminster","region":"London","postal_code":"123456","unit_count":1}' --permission $(USR_ACCOUNT_NAME)@active
