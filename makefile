@@ -1,6 +1,6 @@
 # Variables set on .env
 
-include .env.stage
+include .env
 
 all:
 	rm -f fsmanager/* !fsmanager/.gitkeep
@@ -24,25 +24,23 @@ unlockStage:
 	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877  wallet unlock -n dev --password $(WALLET_PWD)
 
 importKeysStage:
-	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 wallet import $(EOSIO_PRIV) -n dev
-	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 wallet import $(FSMGR_PRIV) -n dev
-	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 wallet import $(USR_PRIV) -n dev
-	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 wallet import $(MTS_PRIV) -n dev
+	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 wallet import $(USRAAA_PRIV) -n dev
+	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 wallet import $(DEVACC_PRIV) -n dev
 
 setupaccStage:
-	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 system newaccount --stake-net "1 XFS" --stake-cpu "1 XFS" --buy-ram "13 XFS" $(MTS_ACCOUNT_NAME) $(FSMGR_ACCOUNT_NAME) $(MTS_PUB) $(FSMGR_PUB)
+	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 system newaccount --stake-net "1 XFS" --stake-cpu "1 XFS" --buy-ram "13 XFS" $(USRA_ACCOUNT_NAME) $(FSMGR_ACCOUNT_NAME) $(USRA_PUB) $(FSMGR_PUB)
 
 buyRamMatheusStage:
-	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 system buyram $(MTS_ACCOUNT_NAME) $(MTS_ACCOUNT_NAME) "1 XFS"
+	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 system buyram $(USRA_ACCOUNT_NAME) $(USRA_ACCOUNT_NAME) "1 XFS"
 
 buyRamFsmgrStage:
-	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 system buyram $(MTS_ACCOUNT_NAME) $(FSMGR_ACCOUNT_NAME) "2 XFS"
-	
+	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 system buyram $(USRA_ACCOUNT_NAME) $(FSMGR_ACCOUNT_NAME) "1 XFS"
+
 sellRamStage:
-	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 system sellram $(MTS_ACCOUNT_NAME) 100000
+	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 system sellram $(USRA_ACCOUNT_NAME) 100000
 
 deployStage:
-	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 set contract $(FSMGR_ACCOUNT_NAME) ~/Documents/feesimple/poc-smart-contracts/fsmanager ~/Documents/feesimple/poc-smart-contracts/fsmanager/fsmanager.wast ~/Documents/feesimple/poc-smart-contracts/fsmanager/fsmanager.abi
+	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 set contract $(FSMGR_ACCOUNT_NAME) ~/poc-smart-contracts/fsmanager ~/poc-smart-contracts/fsmanager/fsmanager.wast ~/poc-smart-contracts/fsmanager/fsmanager.abi
 
 pushFakeDataStage:
 	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 push action $(FSMGR_ACCOUNT_NAME) addproperty '{"author":"$(USR_ACCOUNT_NAME)","name":"Abbey Road Studios","address_1":"3 Abbey Road, St John`s Wood","address_2":"2nd Floor","city":"City of Westminster","region":"London","postal_code":"123456","unit_count":1}' --permission $(USR_ACCOUNT_NAME)@active
@@ -53,7 +51,7 @@ getDataStage:
 	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 get table $(FSMGR_ACCOUNT_NAME) $(USR_ACCOUNT_NAME) property
 
 getAccountMtsStage:
-	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 get account $(MTS_ACCOUNT_NAME)
+	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 get account $(USRA_ACCOUNT_NAME)
 
 getAccountFsmgrStage:
 	cleos --wallet-url http://127.0.0.1:6666 --url http://138.197.194.220:8877 get account $(FSMGR_ACCOUNT_NAME)
