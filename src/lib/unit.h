@@ -6,7 +6,6 @@ namespace feesimple{
   // @abi table
   struct unit {
     uint64_t id;
-    uint64_t floorplan_id;
     uint64_t property_id;
 
     string name;
@@ -20,10 +19,9 @@ namespace feesimple{
     uint64_t date_available; //unix timestamp
 
     auto primary_key()const { return id; }
-    uint64_t by_floorplan()const { return floorplan_id; }
     uint64_t by_property()const { return property_id; }
 
-    EOSLIB_SERIALIZE(unit, (id)(floorplan_id)(property_id)(name)(bedrooms)(bathrooms)(sq_ft_min)(sq_ft_max)(rent_min)(rent_max)(status)(date_available));
+    EOSLIB_SERIALIZE(unit, (id)(property_id)(name)(bedrooms)(bathrooms)(sq_ft_min)(sq_ft_max)(rent_min)(rent_max)(status)(date_available));
   };
 
   // @abi table
@@ -41,6 +39,20 @@ namespace feesimple{
     uint64_t by_unit()const { return unit_id; }
 
     EOSLIB_SERIALIZE(termpricing, (id)(unit_id)(rent)(term)(start_date)(end_date));
+  };
+
+  // @abi table
+  struct unitimg {
+    uint64_t id;
+    uint64_t unit_id;
+
+    checksum256 image_hash;
+    string ipfs_address;
+
+    auto primary_key()const { return id; }
+    uint64_t by_unit()const { return unit_id; }
+
+    EOSLIB_SERIALIZE(unitimg, (id)(unit_id)(image_hash)(ipfs_address));
   };
 
 }

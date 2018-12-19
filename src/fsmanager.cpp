@@ -185,7 +185,7 @@ namespace feesimple{
     // UNIT TABLE --------------------------------------------------------
 
     // @abi action
-    void addunit(account_name author, uint64_t floorplan_id, uint64_t property_id,
+    void addunit(account_name author, uint64_t property_id,
     string name, uint64_t bedrooms, uint64_t bathrooms, uint64_t sq_ft_min,
     uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, string status,
     uint64_t date_available){
@@ -194,7 +194,6 @@ namespace feesimple{
       unit_index units(_self,author);
       units.emplace(author, [&] (auto& row) {
         row.id             = units.available_primary_key();
-        row.floorplan_id   = floorplan_id;
         row.property_id    = property_id;
         row.name           = name;
         row.bedrooms       = bedrooms;
@@ -209,7 +208,7 @@ namespace feesimple{
     }
 
     // @abi action
-    void modunit(account_name author,uint64_t id , uint64_t floorplan_id, uint64_t property_id,
+    void modunit(account_name author,uint64_t id, uint64_t property_id,
     string name, uint64_t bedrooms, uint64_t bathrooms, uint64_t sq_ft_min,
     uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, string status,
     uint64_t date_available) {
@@ -220,7 +219,6 @@ namespace feesimple{
       eosio_assert(iter != units.end(), "Unit does not exist");
 
       units.modify(iter, 0, [&] (auto& row) {
-        row.floorplan_id   = floorplan_id;
         row.property_id    = property_id;
         row.name           = name;
         row.bedrooms       = bedrooms;
@@ -303,6 +301,49 @@ namespace feesimple{
       eosio_assert(iter != termpricings.end(), "Price term does not exist");
 
       termpricings.erase(iter);
+    }
+
+    // UNIT IMG TABLE -----------------------------------------------------
+
+    // @abi action
+    void addunitimg(account_name author, uint64_t unit_id, checksum256 image_hash,
+      string ipfs_address){
+      require_auth(author);
+
+      unitimg_index unitimgs(_self,author);
+      unitimgs.emplace(author, [&] (auto& row) {
+        row.id           = unitimgs.available_primary_key();
+        row.unit_id = unit_id;
+        row.image_hash   = image_hash;
+        row.ipfs_address = ipfs_address;
+      });
+    }
+
+    // @abi action
+    void modunitimg(account_name author, uint64_t id, uint64_t unit_id,
+      checksum256 image_hash, string ipfs_address) {
+      require_auth(author);
+
+      unitimg_index unitimgs(_self,author);
+      auto iter = unitimgs.find(id);
+      eosio_assert(iter != unitimgs.end(), "Floor Plan Image does not exist");
+
+      unitimgs.modify(iter, 0, [&] (auto& row) {
+        row.unit_id = unit_id;
+        row.image_hash   = image_hash;
+        row.ipfs_address = ipfs_address;
+      });
+    }
+
+    // @abi action
+    void delunitimg(account_name author, uint64_t id) {
+      require_auth(author);
+
+      unitimg_index unitimgs(_self,author);
+      auto iter = unitimgs.find(id);
+      eosio_assert(iter != unitimgs.end(), "Floor Plan Image does not exist");
+
+      unitimgs.erase(iter);
     }
 
     // GUEST TABLE -----------------------------------------------------------
@@ -420,13 +461,16 @@ namespace feesimple{
       > flplanimg_index;
 
     typedef multi_index<N(unit), unit,
-      indexed_by< N(floorplan_id), const_mem_fun<unit, uint64_t, &unit::by_floorplan>>,
       indexed_by< N(property_id), const_mem_fun<unit, uint64_t, &unit::by_property>>
       > unit_index;
 
     typedef multi_index<N(termpricing), termpricing,
       indexed_by< N(unit_id), const_mem_fun<termpricing, uint64_t, &termpricing::by_unit>>
       > termpricing_index;    
+
+    typedef multi_index<N(unitimg), unitimg,
+      indexed_by< N(unit_id), const_mem_fun<unitimg, uint64_t, &unitimg::by_unit>>
+      > unitimg_index;
 
     typedef multi_index<N(guest), guest> guest_index;
 
@@ -435,5 +479,5 @@ namespace feesimple{
       > event_index;
   };
 
-  EOSIO_ABI(fsmanager,(addproperty)(modproperty)(delproperty)(addfloorplan)(modfloorplan)(delfloorplan)(addflplanimg)(modflplanimg)(delflplanimg)(addunit)(modunit)(delunit)(addtmpricing)(modtmpricing)(deltmpricing)(addguest)(modguest)(delguest)(addevent)(modevent)(delevent));
+  EOSIO_ABI(fsmanager,(addproperty)(modproperty)(delproperty)(addfloorplan)(modfloorplan)(delfloorplan)(addflplanimg)(modflplanimg)(delflplanimg)(addunit)(modunit)(delunit)(addtmpricing)(modtmpricing)(deltmpricing)(addunitimg)(modunitimg)(delunitimg)(addguest)(modguest)(delguest)(addevent)(modevent)(delevent));
 }
