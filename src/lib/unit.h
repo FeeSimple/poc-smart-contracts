@@ -28,7 +28,11 @@ namespace feesimple{
   struct termpricing {
     uint64_t id;
     uint64_t unit_id;
-
+    
+    // This is inserted as a dummy element so that the generated ABI
+    // won't treat the "rent" as an unexpected foreign key
+    string dummy; 
+    
     uint64_t rent;
     uint64_t term;
     uint64_t start_date; //unix timestamp
