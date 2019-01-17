@@ -127,14 +127,26 @@ namespace feesimple{
     void delfloorplan(account_name author, uint64_t id) {
       require_auth(author);
 
-      flplanimg_index flplanimgs(_self,author);
-      auto floorplanidx = flplanimgs.get_index<N(floorplan_id)>();
-      auto flplanimg = floorplanidx.find(id);
-      eosio_assert(flplanimg == floorplanidx.end(), "Foreign key constrant violation: row referenced on flplanimgs");
-
       floorplan_index floorplans(_self,author);
       auto iter = floorplans.find(id);
       eosio_assert(iter != floorplans.end(), "Floor Plan does not exist");
+
+      // At first, find all associated floorplan-img
+      flplanimg_index flplanimgs(_self,author);
+      std::vector<uint64_t> keysForDeletion;
+      for(auto& item : flplanimgs) {
+          if (item.floorplan_id == id) {
+              keysForDeletion.push_back(item.id);   
+          }
+      }
+      
+      // Then, get the associated floorplan-img deleted
+      for (uint64_t key : keysForDeletion) {
+          auto itr = flplanimgs.find(key);
+          if (itr != flplanimgs.end()) {
+              flplanimgs.erase(itr);
+          }
+      }
 
       floorplans.erase(iter);
     }
@@ -240,10 +252,40 @@ namespace feesimple{
       auto iter = units.find(id);
       eosio_assert(iter != units.end(), "Unit does not exist");
 
+      // At first, find all associated unit-img
+      unitimg_index unitimgs(_self,author);
+      std::vector<uint64_t> keysForDeletion;
+      for(auto& item : unitimgs) {
+          if (item.unit_id == id) {
+              keysForDeletion.push_back(item.id);   
+          }
+      }
+      
+      // Then, get the associated unit-img deleted
+      for (uint64_t key : keysForDeletion) {
+          auto itr = unitimgs.find(key);
+          if (itr != unitimgs.end()) {
+              unitimgs.erase(itr);
+          }
+      }
+
+      // Repeat the same for associated termpricing
+      // At first, find all associated termpricing
       termpricing_index termpricings(_self,author);
-      auto termpricingidx = termpricings.get_index<N(unit_id)>();
-      auto termpricing = termpricingidx.find(id);
-      eosio_assert(termpricing == termpricingidx.end(), "Foreign key constrant violation: row referenced on termpricings");
+      keysForDeletion.clear();
+      for(auto& item : termpricings) {
+          if (item.unit_id == id) {
+              keysForDeletion.push_back(item.id);   
+          }
+      }
+      
+      // Then, get the associated termpricing deleted
+      for (uint64_t key : keysForDeletion) {
+          auto itr = termpricings.find(key);
+          if (itr != termpricings.end()) {
+              termpricings.erase(itr);
+          }
+      }
 
       units.erase(iter);
     }

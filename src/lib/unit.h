@@ -42,7 +42,7 @@ namespace feesimple{
     auto primary_key()const { return id; }
     uint64_t by_unit()const { return unit_id; }
 
-    EOSLIB_SERIALIZE(termpricing, (id)(unit_id)(rent)(term)(start_date)(end_date));
+    EOSLIB_SERIALIZE(termpricing, (id)(unit_id)(dummy)(rent)(term)(start_date)(end_date));
   };
 
   // @abi table
