@@ -59,11 +59,40 @@ namespace feesimple{
     // @abi action
     void delproperty(account_name author, uint64_t id) {
       require_auth(author);
+
+      // Find all associated units
+      unit_index units(_self,author);
+      std::vector<uint64_t> keysForDeletion;
+      for(auto& item : units) {
+        if (item.property_id == id) {
+            keysForDeletion.push_back(item.id);   
+        }
+      }
       
+      // Then, get the associated units deleted
+      for (uint64_t key : keysForDeletion) {
+          auto itr = units.find(key);
+          if (itr != units.end()) {
+              units.erase(itr);
+          }
+      }
+      
+      // Find all associated floorplans
       floorplan_index floorplans(_self,author);
-      auto propidx = floorplans.get_index<N(property_id)>();
-      auto floorplan = propidx.find(id);
-      eosio_assert(floorplan == propidx.end(), "Foreign key constrant violation: row referenced on floorplans");
+      keysForDeletion.clear();
+      for(auto& item : floorplans) {
+        if (item.property_id == id) {
+            keysForDeletion.push_back(item.id);   
+        }
+      }
+      
+      // Then, get the associated floorplans deleted
+      for (uint64_t key : keysForDeletion) {
+          auto itr = floorplans.find(key);
+          if (itr != floorplans.end()) {
+              floorplans.erase(itr);
+          }
+      }
 
       property_index properties(_self,author);
       auto iter = properties.find(id);
