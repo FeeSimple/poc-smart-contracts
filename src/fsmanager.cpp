@@ -101,6 +101,48 @@ namespace feesimple{
       properties.erase(iter);
     }
 
+    // PROPERTY IMAGE TABLE -------------------------------------------------------
+
+    // @abi action
+    void addpropertyimg(account_name author, uint64_t property_id, checksum256 image_hash,
+      string ipfs_address){
+      require_auth(author);
+
+      propertyimg_index propertyimgs(_self,author);
+      propertyimgs.emplace(author, [&] (auto& row) {
+        row.id           = propertyimgs.available_primary_key();
+        row.property_id = property_id;
+        row.image_hash   = image_hash;
+        row.ipfs_address = ipfs_address;
+      });
+    }
+
+    // @abi action
+    void modpropertyimg(account_name author, uint64_t id, uint64_t property_id,
+      checksum256 image_hash, string ipfs_address) {
+      require_auth(author);
+
+      propertyimg_index propertyimgs(_self,author);
+      auto iter = propertyimgs.find(id);
+      eosio_assert(iter != propertyimgs.end(), "Property Image does not exist");
+
+      propertyimgs.modify(iter, 0, [&] (auto& row) {
+        row.property_id = property_id;
+        row.image_hash   = image_hash;
+        row.ipfs_address = ipfs_address;
+      });
+    }
+
+    // @abi action
+    void delpropertyimg(account_name author, uint64_t id) {
+      require_auth(author);
+
+      propertyimg_index propertyimgs(_self,author);
+      auto iter = propertyimgs.find(id);
+      eosio_assert(iter != propertyimgs.end(), "Property Image does not exist");
+
+      propertyimgs.erase(iter);
+    }
 
     // FLOOR TABLE --------------------------------------------------------------
 
@@ -523,6 +565,10 @@ namespace feesimple{
   private:
     typedef multi_index<N(property), property> property_index;    
 
+    typedef multi_index<N(propertyimg), propertyimg,
+      indexed_by< N(property_id), const_mem_fun<propertyimg, uint64_t, &propertyimg::by_property>>
+      > propertyimg_index;
+
     typedef multi_index<N(floorplan), floorplan,
       indexed_by< N(property_id), const_mem_fun<floorplan, uint64_t, &floorplan::by_property>>
       > floorplan_index;
@@ -550,5 +596,5 @@ namespace feesimple{
       > event_index;
   };
 
-  EOSIO_ABI(fsmanager,(addproperty)(modproperty)(delproperty)(addfloorplan)(modfloorplan)(delfloorplan)(addflplanimg)(modflplanimg)(delflplanimg)(addunit)(modunit)(delunit)(addtmpricing)(modtmpricing)(deltmpricing)(addunitimg)(modunitimg)(delunitimg)(addguest)(modguest)(delguest)(addevent)(modevent)(delevent));
+  EOSIO_ABI(fsmanager,(addproperty)(modproperty)(delproperty)(addpropertyimg)(modpropertyimg)(delpropertyimg)(addfloorplan)(modfloorplan)(delfloorplan)(addflplanimg)(modflplanimg)(delflplanimg)(addunit)(modunit)(delunit)(addtmpricing)(modtmpricing)(deltmpricing)(addunitimg)(modunitimg)(delunitimg)(addguest)(modguest)(delguest)(addevent)(modevent)(delevent));
 }
