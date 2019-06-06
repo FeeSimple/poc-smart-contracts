@@ -104,7 +104,7 @@ namespace feesimple{
     // PROPERTY IMAGE TABLE -------------------------------------------------------
 
     // @abi action
-    void addpropertyimg(account_name author, uint64_t property_id, checksum256 image_hash,
+    void addpropimg(account_name author, uint64_t property_id, checksum256 image_hash,
       string ipfs_address){
       require_auth(author);
 
@@ -118,7 +118,7 @@ namespace feesimple{
     }
 
     // @abi action
-    void modpropertyimg(account_name author, uint64_t id, uint64_t property_id,
+    void modpropimg(account_name author, uint64_t id, uint64_t property_id,
       checksum256 image_hash, string ipfs_address) {
       require_auth(author);
 
@@ -134,7 +134,7 @@ namespace feesimple{
     }
 
     // @abi action
-    void delpropertyimg(account_name author, uint64_t id) {
+    void delpropimg(account_name author, uint64_t id) {
       require_auth(author);
 
       propertyimg_index propertyimgs(_self,author);
@@ -596,5 +596,5 @@ namespace feesimple{
       > event_index;
   };
 
-  EOSIO_ABI(fsmanager,(addproperty)(modproperty)(delproperty)(addpropertyimg)(modpropertyimg)(delpropertyimg)(addfloorplan)(modfloorplan)(delfloorplan)(addflplanimg)(modflplanimg)(delflplanimg)(addunit)(modunit)(delunit)(addtmpricing)(modtmpricing)(deltmpricing)(addunitimg)(modunitimg)(delunitimg)(addguest)(modguest)(delguest)(addevent)(modevent)(delevent));
+  EOSIO_ABI(fsmanager,(addproperty)(modproperty)(delproperty)(addpropimg)(modpropimg)(delpropimg)(addfloorplan)(modfloorplan)(delfloorplan)(addflplanimg)(modflplanimg)(delflplanimg)(addunit)(modunit)(delunit)(addtmpricing)(modtmpricing)(deltmpricing)(addunitimg)(modunitimg)(delunitimg)(addguest)(modguest)(delguest)(addevent)(modevent)(delevent));
 }
