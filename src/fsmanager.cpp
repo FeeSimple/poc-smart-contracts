@@ -20,7 +20,7 @@ namespace feesimple{
 
     // @abi action
     void addproperty(account_name author, string name, string address_1, string address_2,
-      string city, string region, string postal_code, uint64_t unit_count) {
+      string city, string region, string postal_code, uint64_t unit_count, uint64_t created_at) {
       require_auth(author);
 
       property_index properties(_self,author);
@@ -33,12 +33,13 @@ namespace feesimple{
         row.region      = region;
         row.postal_code = postal_code;
         row.unit_count  = unit_count;
+        row.created_at  = created_at;
       });
     }
 
     // @abi action
     void modproperty(account_name author, uint64_t id, string name, string address_1, string address_2,
-      string city, string region, string postal_code, uint64_t unit_count) {
+      string city, string region, string postal_code, uint64_t unit_count, uint64_t created_at) {
       require_auth(author);
 
       property_index properties(_self,author);
@@ -53,6 +54,7 @@ namespace feesimple{
         row.region      = region;
         row.postal_code = postal_code;
         row.unit_count  = unit_count;
+        row.created_at  = created_at;
       });
     }
 
@@ -105,7 +107,7 @@ namespace feesimple{
 
     // @abi action
     void addpropimg(account_name author, uint64_t property_id, checksum256 image_hash,
-      string ipfs_address){
+      string ipfs_address, uint64_t created_at){
       require_auth(author);
 
       propertyimg_index propertyimgs(_self,author);
@@ -114,12 +116,13 @@ namespace feesimple{
         row.property_id = property_id;
         row.image_hash   = image_hash;
         row.ipfs_address = ipfs_address;
+        row.created_at = created_at;
       });
     }
 
     // @abi action
     void modpropimg(account_name author, uint64_t id, uint64_t property_id,
-      checksum256 image_hash, string ipfs_address) {
+      checksum256 image_hash, string ipfs_address, uint64_t created_at) {
       require_auth(author);
 
       propertyimg_index propertyimgs(_self,author);
@@ -130,6 +133,7 @@ namespace feesimple{
         row.property_id = property_id;
         row.image_hash   = image_hash;
         row.ipfs_address = ipfs_address;
+        row.created_at = created_at;
       });
     }
 
@@ -149,7 +153,7 @@ namespace feesimple{
     // @abi action
     void addfloorplan(account_name author, uint64_t property_id, string name, uint64_t bedrooms,
     uint64_t bathrooms, uint64_t sq_ft_min, uint64_t sq_ft_max, uint64_t rent_min,
-    uint64_t rent_max, uint64_t deposit){
+    uint64_t rent_max, uint64_t deposit, uint64_t created_at){
       require_auth(author);
 
       property_index properties(_self,author);
@@ -168,13 +172,14 @@ namespace feesimple{
         row.rent_min    = rent_min;
         row.rent_max    = rent_max;
         row.deposit     = deposit;
+        row.created_at  = created_at;
       });
     }
 
     // @abi action
     void modfloorplan(account_name author, uint64_t id, uint64_t property_id, string name,
     uint64_t bedrooms, uint64_t bathrooms, uint64_t sq_ft_min,
-    uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, uint64_t deposit) {
+    uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, uint64_t deposit, uint64_t created_at) {
       require_auth(author);
 
       floorplan_index floorplans(_self,author);
@@ -191,6 +196,7 @@ namespace feesimple{
         row.rent_min    = rent_min;
         row.rent_max    = rent_max;
         row.deposit     = deposit;
+        row.created_at  = created_at;
       });
     }
 
@@ -226,7 +232,7 @@ namespace feesimple{
 
     // @abi action
     void addflplanimg(account_name author, uint64_t floorplan_id, checksum256 image_hash,
-      string ipfs_address){
+      string ipfs_address, uint64_t created_at){
       require_auth(author);
 
       flplanimg_index flplanimgs(_self,author);
@@ -235,12 +241,13 @@ namespace feesimple{
         row.floorplan_id = floorplan_id;
         row.image_hash   = image_hash;
         row.ipfs_address = ipfs_address;
+        row.created_at = created_at;
       });
     }
 
     // @abi action
     void modflplanimg(account_name author, uint64_t id, uint64_t floorplan_id,
-      checksum256 image_hash, string ipfs_address) {
+      checksum256 image_hash, string ipfs_address, uint64_t created_at) {
       require_auth(author);
 
       flplanimg_index flplanimgs(_self,author);
@@ -251,6 +258,7 @@ namespace feesimple{
         row.floorplan_id = floorplan_id;
         row.image_hash   = image_hash;
         row.ipfs_address = ipfs_address;
+        row.created_at = created_at;
       });
     }
 
@@ -271,7 +279,7 @@ namespace feesimple{
     void addunit(account_name author, uint64_t property_id,
     string name, uint64_t bedrooms, uint64_t bathrooms, uint64_t sq_ft_min,
     uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, string status,
-    uint64_t date_available){
+    uint64_t date_available, uint64_t created_at){
       require_auth(author);
 
       unit_index units(_self,author);
@@ -287,6 +295,7 @@ namespace feesimple{
         row.rent_max       = rent_max;
         row.status         = status;
         row.date_available = date_available;
+        row.created_at     = created_at;
       });
     }
 
@@ -294,7 +303,7 @@ namespace feesimple{
     void modunit(account_name author,uint64_t id, uint64_t property_id,
     string name, uint64_t bedrooms, uint64_t bathrooms, uint64_t sq_ft_min,
     uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, string status,
-    uint64_t date_available) {
+    uint64_t date_available, uint64_t created_at) {
       require_auth(author);
 
       unit_index units(_self,author);
@@ -312,6 +321,7 @@ namespace feesimple{
         row.rent_max       = rent_max;
         row.status         = status;
         row.date_available = date_available;
+        row.created_at = created_at;
       });
     }
 
@@ -365,7 +375,7 @@ namespace feesimple{
 
     // @abi action
     void addtmpricing(account_name author, uint64_t unit_id, uint64_t rent,
-    uint64_t term, uint64_t start_date, uint64_t end_date){
+    uint64_t term, uint64_t start_date, uint64_t end_date, uint64_t created_at){
       require_auth(author);
 
       unit_index units(_self,author);
@@ -380,12 +390,13 @@ namespace feesimple{
         row.term       = term;
         row.start_date = start_date;
         row.end_date   = end_date;
+        row.created_at = created_at;
       });
     }
 
     // @abi action
     void modtmpricing(account_name author, uint64_t id, uint64_t unit_id, uint64_t rent,
-    uint64_t term, uint64_t start_date, uint64_t end_date) {
+    uint64_t term, uint64_t start_date, uint64_t end_date, uint64_t created_at) {
       require_auth(author);
 
       termpricing_index termpricings(_self,author);
@@ -402,6 +413,7 @@ namespace feesimple{
         row.term       = term;
         row.start_date = start_date;
         row.end_date   = end_date;
+        row.created_at = created_at;
       });
     }
 
@@ -420,7 +432,7 @@ namespace feesimple{
 
     // @abi action
     void addunitimg(account_name author, uint64_t unit_id, checksum256 image_hash,
-      string ipfs_address){
+      string ipfs_address, uint64_t created_at){
       require_auth(author);
 
       unitimg_index unitimgs(_self,author);
@@ -429,12 +441,13 @@ namespace feesimple{
         row.unit_id = unit_id;
         row.image_hash   = image_hash;
         row.ipfs_address = ipfs_address;
+        row.created_at   = created_at;
       });
     }
 
     // @abi action
     void modunitimg(account_name author, uint64_t id, uint64_t unit_id,
-      checksum256 image_hash, string ipfs_address) {
+      checksum256 image_hash, string ipfs_address, uint64_t created_at) {
       require_auth(author);
 
       unitimg_index unitimgs(_self,author);
@@ -445,6 +458,7 @@ namespace feesimple{
         row.unit_id = unit_id;
         row.image_hash   = image_hash;
         row.ipfs_address = ipfs_address;
+        row.created_at = created_at;
       });
     }
 
@@ -578,7 +592,8 @@ namespace feesimple{
       > flplanimg_index;
 
     typedef multi_index<N(unit), unit,
-      indexed_by< N(property_id), const_mem_fun<unit, uint64_t, &unit::by_property>>
+      indexed_by< N(property_id), const_mem_fun<unit, uint64_t, &unit::by_property>>,
+      indexed_by< N(floorplan_id), const_mem_fun<unit, uint64_t, &unit::by_floorplan>>
       > unit_index;
 
     typedef multi_index<N(termpricing), termpricing,
