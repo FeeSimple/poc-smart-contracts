@@ -53,10 +53,9 @@ namespace feesimple{
   struct unitimg {
     uint64_t id;
     uint64_t unit_id;
-    uint64_t created_at; //unix timestamp
-
     checksum256 image_hash;
     string ipfs_address;
+    uint64_t created_at; //unix timestamp
 
     auto primary_key()const { return id; }
     uint64_t by_unit()const { return unit_id; }

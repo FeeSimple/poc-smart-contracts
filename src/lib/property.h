@@ -25,9 +25,9 @@ namespace feesimple{
   struct propertyimg {
     uint64_t id;
     uint64_t property_id;
-    uint64_t created_at; //unix timestamp
     checksum256 image_hash;
     string ipfs_address;
+    uint64_t created_at; //unix timestamp
 
     auto primary_key()const { return id; }
     uint64_t by_property()const { return property_id; }
