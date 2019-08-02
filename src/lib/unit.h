@@ -24,7 +24,7 @@ namespace feesimple{
     uint64_t by_property()const { return property_id; }
     uint64_t by_floorplan()const { return floorplan_id; }
 
-    EOSLIB_SERIALIZE(unit, (id)(property_id)(name)(bedrooms)(bathrooms)(sq_ft_min)(sq_ft_max)(rent_min)(rent_max)(status)(date_available)(created_at));
+    EOSLIB_SERIALIZE(unit, (id)(property_id)(floorplan_id)(name)(bedrooms)(bathrooms)(sq_ft_min)(sq_ft_max)(rent_min)(rent_max)(status)(date_available)(created_at));
   };
 
   // @abi table

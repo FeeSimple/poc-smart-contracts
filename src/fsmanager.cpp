@@ -276,7 +276,7 @@ namespace feesimple{
     // UNIT TABLE --------------------------------------------------------
 
     // @abi action
-    void addunit(account_name author, uint64_t property_id,
+    void addunit(account_name author, uint64_t property_id, uint64_t floorplan_id,
     string name, uint64_t bedrooms, uint64_t bathrooms, uint64_t sq_ft_min,
     uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, string status,
     uint64_t date_available, uint64_t created_at){
@@ -286,6 +286,7 @@ namespace feesimple{
       units.emplace(author, [&] (auto& row) {
         row.id             = units.available_primary_key();
         row.property_id    = property_id;
+        row.floorplan_id   = floorplan_id;
         row.name           = name;
         row.bedrooms       = bedrooms;
         row.bathrooms      = bathrooms;
@@ -300,7 +301,7 @@ namespace feesimple{
     }
 
     // @abi action
-    void modunit(account_name author,uint64_t id, uint64_t property_id,
+    void modunit(account_name author,uint64_t id, uint64_t property_id, uint64_t floorplan_id,
     string name, uint64_t bedrooms, uint64_t bathrooms, uint64_t sq_ft_min,
     uint64_t sq_ft_max, uint64_t rent_max, uint64_t rent_min, string status,
     uint64_t date_available, uint64_t created_at) {
@@ -312,6 +313,7 @@ namespace feesimple{
 
       units.modify(iter, 0, [&] (auto& row) {
         row.property_id    = property_id;
+        row.floorplan_id   = floorplan_id;
         row.name           = name;
         row.bedrooms       = bedrooms;
         row.bathrooms      = bathrooms;
